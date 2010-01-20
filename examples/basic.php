@@ -10,8 +10,29 @@ function autoload($class)
 
 spl_autoload_register("autoload");
 
+unlink('results.db');
+
 $dsn              = 'sqlite:results.db';
 $db               = new PDO($dsn);
+$db->exec('create table SpiderPage (
+    id serial,
+    uri varchar(255),
+    primary key(id)
+);');
+$db->exec(
+'create table SpiderJavaScript (
+    id serial,
+    uri varchar(255),
+    script varchar(255),
+    primary key(id)
+);');
+
+$db->exec('create table SpiderStyleSheet (
+    id serial,
+    uri varchar(255),
+    style varchar(255),
+    primary key(id)
+);');
 $pageLogger       = new Spider_PageLogger($db);
 $javaScriptLogger = new Spider_JavaScriptLogger($db);
 $styleSheetLogger = new Spider_StyleSheetLogger($db);

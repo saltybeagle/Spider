@@ -33,8 +33,8 @@ class Spider
     protected $visited = array();
 
     public function __construct(
-        SpiderDownloader $downloader,
-        SpiderParser $parser)
+        Spider_Downloader $downloader,
+        Spider_Parser $parser)
     {
         $this->setDownloader($downloader);
         $this->setParser($parser);
