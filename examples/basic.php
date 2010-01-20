@@ -33,16 +33,20 @@ $db->exec('create table SpiderStyleSheet (
     style varchar(255),
     primary key(id)
 );');
-$pageLogger       = new Spider_PageLogger($db);
-$javaScriptLogger = new Spider_JavaScriptLogger($db);
-$styleSheetLogger = new Spider_StyleSheetLogger($db);
+//$pageLogger       = new Spider_PageLogger($db);
+//$javaScriptLogger = new Spider_JavaScriptLogger($db);
+//$styleSheetLogger = new Spider_StyleSheetLogger($db);
+$logger           = new Spider_Logger();
 $downloader       = new Spider_Downloader();
 $parser           = new Spider_Parser();
 $spider           = new Spider($downloader, $parser);
 
-$spider->addLogger($pageLogger);
-$spider->addLogger($styleSheetLogger);
-$spider->addLogger($javaScriptLogger);
+$spider->addLogger($logger);
+$spider->addUriFilter('Spider_AnchorFilter');
+$spider->addUriFilter('Spider_MailtoFilter');
+//$spider->addLogger($pageLogger);
+//$spider->addLogger($styleSheetLogger);
+//$spider->addLogger($javaScriptLogger);
 
 
 $spider->spider('http://www.unl.edu/fwc/');

@@ -28,6 +28,7 @@ class Spider
     const MAX_DEPTH = 50;
 
     protected $loggers = array();
+    protected $filters = array();
     protected $downloader = null;
     protected $parser = null;
     protected $visited = array();
@@ -56,6 +57,13 @@ class Spider
             $this->loggers[] = $logger;
         }
     }
+    
+    public function addUriFilter($filterClass)
+    {
+        if (!in_array($filterClass, $this->filters)) {
+            $this->filters[] = $filterClass;
+        }
+    }
 
     public function spider($baseUri)
     {
@@ -64,12 +72,11 @@ class Spider
 
     protected function spiderPage($baseUri, $uri, $depth = 1)
     {
-        echo $uri, "\n";
 
         $this->visited[$uri] = true;
 
         $content = $this->downloader->download($uri);
-        $xpath   = $this->parser->parse($content);
+        $xpath   = $this->parser->parse($content, $uri);
 
         foreach ($this->loggers as $logger) {
             $logger->log($uri, $xpath);
@@ -78,6 +85,11 @@ class Spider
         // spider sub-pages
         if ($depth < self::MAX_DEPTH) {
             $subUris = $this->getUris($baseUri, $xpath);
+            
+            foreach ($this->filters as $filter_class) {
+                $subUris = new $filter_class($subUris);
+            }
+            
             foreach ($subUris as $subUri) {
                 if (!array_key_exists($subUri, $this->visited)) {
                     $this->spiderPage($baseUri, $subUri, $depth + 1);
@@ -105,17 +117,48 @@ class Spider
         );
 
         foreach ($nodes as $node) {
-            $uri = (string)$node->nodeValue;
-            if (strncmp($baseUri, $uri, strlen($baseUri)) === 0) {
-                $uris[] = $uri;
-            } elseif (
-                   $uri != '.'
-                && preg_match('!^(https?|ftp)://!i', $uri) === 0
-            ) {
-                $uris[] = $baseHref . $uri;
+            $uri = $this->absolutePath((string)$node->nodeValue, $baseUri);
+            
+            if (!empty($uri)) {
+                if (strncmp($baseUri, $uri, strlen($baseUri)) === 0) {
+                    $uris[] = $uri;
+                } elseif (
+                       $uri != '.'
+                    && preg_match('!^(https?|ftp)://!i', $uri) === 0
+                ) {
+                    $uris[] = $baseHref . $uri;
+                }
             }
         }
 
-        return $uris;
+        return new Spider_UriIterator($uris);
+    }
+    
+    public function absolutePath($relativeUri, $baseUri)
+    {
+        $new_base_url = $baseUri;
+        $base_url_parts = parse_url($baseUri);
+        
+        if (substr($baseUri,-1) != '/') {
+            $path = pathinfo($base_url_parts['path']);
+            $new_base_url = substr($new_base_url, 0, strlen($new_base_url)-strlen($path['basename']));
+        }
+        
+        $new_txt = '';
+    
+        if (substr($relativeUri,0,7) != 'http://'
+             && substr($relativeUri,0,8) != 'https://'
+             && substr($relativeUri,0,6) != 'ftp://'
+             && substr($relativeUri,0,7) != 'mailto:') {
+             if (substr($relativeUri,0,1) == '/') {
+                 $new_base_url = $base_url_parts['scheme'].'://'.$base_url_parts['host'];
+             }
+             $new_txt .= substr($relativeUri,0,0).$new_base_url;
+        } else {
+            $new_txt .= substr($relativeUri,0,0);
+        }
+        $relativeUri = substr($relativeUri,0);
+        $relativeUri = $new_txt.$relativeUri;
+        return $relativeUri;
     }
 }

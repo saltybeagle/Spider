@@ -1,5 +1,8 @@
 <?php
-abstract class Spider_Logger
+class Spider_Logger extends Spider_LoggerAbstract
 {
-    abstract public function log($uri, DOMXPath $xpath);
+    public function log($uri, DOMXPath $xpath)
+    {
+        echo $uri . PHP_EOL;
+    }
 }

@@ -22,7 +22,11 @@ class Spider_Downloader
     public function download($uri)
     {
         curl_setopt($this->curl, CURLOPT_URL, $uri);
-        return curl_exec($this->curl);
+        $result = curl_exec($this->curl);
+        if (!$result) {
+            throw new Exception('Error downloading ' . $uri);
+        }
+        return $result;
     }
 
     public function __destruct()
