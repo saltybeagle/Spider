@@ -24,7 +24,7 @@ class Spider_Downloader
         curl_setopt($this->curl, CURLOPT_URL, $uri);
         $result = curl_exec($this->curl);
         if (!$result) {
-            throw new Exception('Error downloading ' . $uri);
+            throw new Exception('Error downloading ' . $uri. $result);
         }
         return $result;
     }

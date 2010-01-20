@@ -95,7 +95,11 @@ class Spider
             
             foreach ($subUris as $subUri) {
                 if (!array_key_exists($subUri, $this->visited)) {
-                    $this->spiderPage($baseUri, $subUri, $depth + 1);
+                    try {
+                        $this->spiderPage($baseUri, $subUri, $depth + 1);
+                    } catch(Exception $e) {
+                        throw new Exception($baseUri . ' linked to a page that does not exist!' .$subUri);
+                    }
                 }
             }
         }
@@ -142,26 +146,22 @@ class Spider
         $new_base_url = $baseUri;
         $base_url_parts = parse_url($baseUri);
         
-        if (substr($baseUri,-1) != '/') {
+        if (substr($baseUri, -1) != '/') {
             $path = pathinfo($base_url_parts['path']);
             $new_base_url = substr($new_base_url, 0, strlen($new_base_url)-strlen($path['basename']));
         }
         
         $new_txt = '';
     
-        if (substr($relativeUri,0,7) != 'http://'
-             && substr($relativeUri,0,8) != 'https://'
-             && substr($relativeUri,0,6) != 'ftp://'
-             && substr($relativeUri,0,7) != 'mailto:') {
-             if (substr($relativeUri,0,1) == '/') {
+        if (!filter_var($relativeUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
+             if (substr($relativeUri, 0, 1) == '/') {
                  $new_base_url = $base_url_parts['scheme'].'://'.$base_url_parts['host'];
              }
-             $new_txt .= substr($relativeUri,0,0).$new_base_url;
-        } else {
-            $new_txt .= substr($relativeUri,0,0);
+             $new_txt .= $new_base_url;
         }
-        $relativeUri = substr($relativeUri,0);
-        $relativeUri = $new_txt.$relativeUri;
-        return $relativeUri;
+        
+        $absoluteUri = $new_txt.$relativeUri;
+        
+        return $absoluteUri;
     }
 }
