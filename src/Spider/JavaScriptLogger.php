@@ -1,0 +1,36 @@
+<?php
+class Spider_JavaScriptLogger extends Spider_DbLogger
+{
+    public function log($uri, DOMXPath $xpath)
+    {
+        $scripts = $this->getScripts($xpath);
+        foreach ($scripts as $script) {
+            $this->saveScript($uri, $script);
+        }
+    }
+
+    protected function getScripts(DOMXPath $xpath)
+    {
+        $scripts = array();
+
+        $nodes = $xpath->query(
+            "//xhtml:script[@type='text/javascript' and @src]/@src"
+        );
+
+        foreach ($nodes as $node) {
+            $scripts[] = (string)$node->nodeValue;
+        }
+
+        return $scripts;
+    }
+
+    protected function saveScript($uri, $script)
+    {
+        $statement = $this->db->prepare(
+            'insert into SpiderJavaScript (uri, script) ' .
+            'values (:uri, :script)'
+        );
+
+        $statement->execute(array($uri, $script));
+    }
+}
