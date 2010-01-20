@@ -10,7 +10,7 @@ function autoload($class)
 
 spl_autoload_register("autoload");
 
-$dsn              = 'sqlite://results.db';
+$dsn              = 'sqlite:results.db';
 $db               = new PDO($dsn);
 $pageLogger       = new Spider_PageLogger($db);
 $javaScriptLogger = new Spider_JavaScriptLogger($db);

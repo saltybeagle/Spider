@@ -1,22 +1,9 @@
 <?php
-class Spider_Parser
+class Spider_Parser implements Spider_ParserInterface
 {
     public function parse($content)
     {
-        $content = $this->tidy($content);
         return $this->getXPath($content);
-    }
-
-    protected function tidy($content)
-    {
-        $config = array(
-            'output-xhtml' => true,
-        );
-
-        $tidy = tidy_parse_string($content, $config, 'utf8');
-        $tidy->cleanRepair();
-
-        return (string)$tidy;
     }
 
     protected function getXPath($content)
