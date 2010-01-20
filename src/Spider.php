@@ -46,12 +46,12 @@ class Spider
         $this->downloader = $downloader;
     }
 
-    public function setParser(Spider_Parser $parser)
+    public function setParser(Spider_ParserInterface $parser)
     {
         $this->parser = $parser;
     }
 
-    public function addLogger(Spider_Logger $logger)
+    public function addLogger(Spider_LoggerAbstract $logger)
     {
         if (!in_array($logger, $this->loggers)) {
             $this->loggers[] = $logger;
@@ -67,6 +67,9 @@ class Spider
 
     public function spider($baseUri)
     {
+        if (!filter_var($baseUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
+            throw new Exception('Invalid URI: ' . $baseUri);
+        }
         $this->spiderPage($baseUri, $baseUri);
     }
 
