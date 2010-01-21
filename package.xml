@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package version="2.1" xmlns="http://pear.php.net/dtd/package-2.1" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0     http://pear.php.net/dtd/tasks-1.0.xsd     http://pear.php.net/dtd/package-2.1     http://pear.php.net/dtd/package-2.1.xsd">
- <name>PEAR2_Spider</name>
- <channel>pear2.php.net</channel>
- <summary>Package PEAR2_Spider summary.
+ <name>Spider</name>
+ <channel>pearhub.org</channel>
+ <summary>Package Spider summary.
 </summary>
  <description>
-Package detailed description here (found in README)</description>
+Package detailed description here (found in README)
+</description>
  <lead>
-  <name>Your Name</name>
-  <user>handle</user>
-  <email>handle@php.net</email>
+  <name>Brett Bieber</name>
+  <user>saltybeagle</user>
+  <email>saltybeagle@php.net</email>
   <active>yes</active>
  </lead>
- <date>2010-01-20</date>
- <time>11:23:13</time>
+ <date>2010-01-21</date>
+ <time>08:56:17</time>
  <version>
   <release>0.1.0</release>
   <api>0.1.0</api>
@@ -28,10 +29,29 @@ Package detailed description here (found in README)</description>
 Package PEAR2_Spider API release notes for version 0.1.0.</notes>
  <contents>
   <dir name="/">
-   <dir name="src" baseinstalldir="pear2">
+   <dir name="examples">
+    <file role="doc" name="basic.php"/>
+    <file role="doc" name="batch_validator.php"/>
+    <file role="doc" name="results.db"/>
+   </dir>
+   <dir name="src" baseinstalldir="/">
     <dir name="Spider">
-     <file role="php" name="Main.php"/>
+     <file role="php" name="AnchorFilter.php"/>
+     <file role="php" name="DbLogger.php"/>
+     <file role="php" name="Downloader.php"/>
+     <file role="php" name="JavaScriptLogger.php"/>
+     <file role="php" name="Logger.php"/>
+     <file role="php" name="LoggerAbstract.php"/>
+     <file role="php" name="MailtoFilter.php"/>
+     <file role="php" name="PageLogger.php"/>
+     <file role="php" name="Parser.php"/>
+     <file role="php" name="ParserInterface.php"/>
+     <file role="php" name="StyleSheetLogger.php"/>
+     <file role="php" name="TidyParser.php"/>
+     <file role="php" name="UriFilterInterface.php"/>
+     <file role="php" name="UriIterator.php"/>
     </dir>
+    <file role="php" name="Spider.php"/>
    </dir>
   </dir>
  </contents>

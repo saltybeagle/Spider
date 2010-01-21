@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <package version="2.1" xmlns="http://pear.php.net/dtd/package-2.1" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0     http://pear.php.net/dtd/tasks-1.0.xsd     http://pear.php.net/dtd/package-2.1     http://pear.php.net/dtd/package-2.1.xsd">
- <name>PEAR2_Spider</name>
- <channel>pear2.php.net</channel>
- <summary>Package PEAR2_Spider summary.
+ <name>Spider</name>
+ <channel>pearhub.org</channel>
+ <summary>Package Spider summary.
 </summary>
  <description>
-Package detailed description here (found in README)</description>
+Package detailed description here (found in README)
+</description>
  <lead>
-  <name>Your Name</name>
-  <user>handle</user>
-  <email>handle@php.net</email>
+  <name>Brett Bieber</name>
+  <user>saltybeagle</user>
+  <email>saltybeagle@php.net</email>
   <active>yes</active>
  </lead>
- <date>2010-01-20</date>
- <time>11:23:13</time>
+ <date>2010-01-21</date>
+ <time>08:56:17</time>
  <version>
   <release>0.1.0</release>
   <api>0.1.0</api>
@@ -28,7 +29,24 @@ Package detailed description here (found in README)</description>
 Package PEAR2_Spider API release notes for version 0.1.0.</notes>
  <contents>
   <dir name="/">
-   <file role="php" name="php/pear2/Spider/Main.php"/>
+   <file role="php" name="php/Spider/UriIterator.php"/>
+   <file role="php" name="php/Spider/UriFilterInterface.php"/>
+   <file role="php" name="php/Spider/TidyParser.php"/>
+   <file role="php" name="php/Spider/StyleSheetLogger.php"/>
+   <file role="php" name="php/Spider/ParserInterface.php"/>
+   <file role="php" name="php/Spider/Parser.php"/>
+   <file role="php" name="php/Spider/PageLogger.php"/>
+   <file role="php" name="php/Spider/MailtoFilter.php"/>
+   <file role="php" name="php/Spider/LoggerAbstract.php"/>
+   <file role="php" name="php/Spider/Logger.php"/>
+   <file role="php" name="php/Spider/JavaScriptLogger.php"/>
+   <file role="php" name="php/Spider/Downloader.php"/>
+   <file role="php" name="php/Spider/DbLogger.php"/>
+   <file role="php" name="php/Spider/AnchorFilter.php"/>
+   <file role="php" name="php/Spider.php"/>
+   <file role="doc" name="doc/Spider/pearhub.org/examples/examples/results.db"/>
+   <file role="doc" name="doc/Spider/pearhub.org/examples/examples/batch_validator.php"/>
+   <file role="doc" name="doc/Spider/pearhub.org/examples/examples/basic.php"/>
   </dir>
  </contents>
  <dependencies>
@@ -43,7 +61,24 @@ Package PEAR2_Spider API release notes for version 0.1.0.</notes>
  </dependencies>
  <phprelease>
   <filelist>
-   <install name="php/pear2/Spider/Main.php" as="pear2/Spider/Main.php"/>
+   <install name="doc/Spider/pearhub.org/examples/examples/basic.php" as="pearhub.org/examples/examples/basic.php"/>
+   <install name="doc/Spider/pearhub.org/examples/examples/batch_validator.php" as="pearhub.org/examples/examples/batch_validator.php"/>
+   <install name="doc/Spider/pearhub.org/examples/examples/results.db" as="pearhub.org/examples/examples/results.db"/>
+   <install name="php/Spider.php" as="Spider.php"/>
+   <install name="php/Spider/AnchorFilter.php" as="Spider/AnchorFilter.php"/>
+   <install name="php/Spider/DbLogger.php" as="Spider/DbLogger.php"/>
+   <install name="php/Spider/Downloader.php" as="Spider/Downloader.php"/>
+   <install name="php/Spider/JavaScriptLogger.php" as="Spider/JavaScriptLogger.php"/>
+   <install name="php/Spider/Logger.php" as="Spider/Logger.php"/>
+   <install name="php/Spider/LoggerAbstract.php" as="Spider/LoggerAbstract.php"/>
+   <install name="php/Spider/MailtoFilter.php" as="Spider/MailtoFilter.php"/>
+   <install name="php/Spider/PageLogger.php" as="Spider/PageLogger.php"/>
+   <install name="php/Spider/Parser.php" as="Spider/Parser.php"/>
+   <install name="php/Spider/ParserInterface.php" as="Spider/ParserInterface.php"/>
+   <install name="php/Spider/StyleSheetLogger.php" as="Spider/StyleSheetLogger.php"/>
+   <install name="php/Spider/TidyParser.php" as="Spider/TidyParser.php"/>
+   <install name="php/Spider/UriFilterInterface.php" as="Spider/UriFilterInterface.php"/>
+   <install name="php/Spider/UriIterator.php" as="Spider/UriIterator.php"/>
   </filelist>
  </phprelease>
 </package>
