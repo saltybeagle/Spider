@@ -1,3 +1,4 @@
-Package Spider summary.
+Spiders a website and optionally logs information about it
 
-Package detailed description here (found in README)
+This is a simple, yet flexible web spider for indexing a website. Requires
+PHP 5.

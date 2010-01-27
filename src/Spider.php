@@ -4,10 +4,10 @@
  *
  * PHP version 5
  *
- * @category  Yourcategory
+ * @category  Tools
  * @package   PEAR2_Spider
- * @author    Your Name <handle@php.net>
- * @copyright 2010 Your Name
+ * @author    Michael Gauthier <mike@silverorange.com>
+ * @copyright 2010 silverorange Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @version   SVN: $Id$
  * @link      http://svn.php.net/repository/pear2/PEAR2_Spider
@@ -16,10 +16,10 @@
 /**
  * Main class for PEAR2_Spider
  *
- * @category  Yourcategory
+ * @category  Tools
  * @package   PEAR2_Spider
- * @author    Your Name <handle@php.net>
- * @copyright 2010 Your Name
+ * @author    Michael Gauthier <mike@silverorange.com>
+ * @copyright 2010 silverorange Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @link      http://svn.php.net/repository/pear2/PEAR2_Spider
  */
