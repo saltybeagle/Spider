@@ -1,7 +1,7 @@
 <?php
 class Spider_PageLogger extends Spider_DbLogger
 {
-    public function log($uri, DOMXPath $xpath)
+    public function log($uri, $depth, DOMXPath $xpath)
     {
         $this->savePage($uri);
     }

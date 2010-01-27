@@ -82,7 +82,7 @@ class Spider
         $xpath   = $this->parser->parse($content, $uri);
 
         foreach ($this->loggers as $logger) {
-            $logger->log($uri, $xpath);
+            $logger->log($uri, $depth, $xpath);
         }
 
         // spider sub-pages
@@ -98,7 +98,7 @@ class Spider
                     try {
                         $this->spiderPage($baseUri, $subUri, $depth + 1);
                     } catch(Exception $e) {
-                        throw new Exception($uri . ' linked to a page that does not exist!' .$subUri, 404, $e);
+                        echo "\nThe page, ".$uri.' linked to a page that could not be accessed: ' . $subUri.PHP_EOL;
                     }
                 }
             }
@@ -124,7 +124,7 @@ class Spider
         );
 
         foreach ($nodes as $node) {
-            $uri = $this->absolutePath((string)$node->nodeValue, $baseUri);
+            $uri = self::absolutePath((string)$node->nodeValue, $baseUri);
             
             if (!empty($uri)) {
                 if (strncmp($baseUri, $uri, strlen($baseUri)) === 0) {
@@ -141,8 +141,14 @@ class Spider
         return new Spider_UriIterator($uris);
     }
     
-    public function absolutePath($relativeUri, $baseUri)
+    public static function absolutePath($relativeUri, $baseUri)
     {
+
+        if (filter_var($relativeUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
+            // URL is already absolute
+            return $relativeUri;
+        }
+        
         $new_base_url = $baseUri;
         $base_url_parts = parse_url($baseUri);
         
@@ -152,13 +158,11 @@ class Spider
         }
         
         $new_txt = '';
-    
-        if (!filter_var($relativeUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
-             if (substr($relativeUri, 0, 1) == '/') {
-                 $new_base_url = $base_url_parts['scheme'].'://'.$base_url_parts['host'];
-             }
-             $new_txt .= $new_base_url;
+        
+        if (substr($relativeUri, 0, 1) == '/') {
+            $new_base_url = $base_url_parts['scheme'].'://'.$base_url_parts['host'];
         }
+        $new_txt .= $new_base_url;
         
         $absoluteUri = $new_txt.$relativeUri;
         

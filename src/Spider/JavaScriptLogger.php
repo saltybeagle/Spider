@@ -1,7 +1,7 @@
 <?php
 class Spider_JavaScriptLogger extends Spider_DbLogger
 {
-    public function log($uri, DOMXPath $xpath)
+    public function log($uri, $depth, DOMXPath $xpath)
     {
         $scripts = $this->getScripts($xpath);
         foreach ($scripts as $script) {

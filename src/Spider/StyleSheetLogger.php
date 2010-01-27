@@ -1,7 +1,7 @@
 <?php
 class Spider_StyleSheetLogger extends Spider_DbLogger
 {
-    public function log($uri, DOMXPath $xpath)
+    public function log($uri, $depth, DOMXPath $xpath)
     {
         $styles = $this->getStyles($xpath);
         foreach ($styles as $style) {
