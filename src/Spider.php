@@ -33,6 +33,7 @@ class Spider
     protected $filters = array();
     protected $downloader = null;
     protected $parser = null;
+    protected $start_base = null;
     protected $visited = array();
 
     public function __construct(
@@ -72,7 +73,8 @@ class Spider
         if (!filter_var($baseUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
             throw new Exception('Invalid URI: ' . $baseUri);
         }
-        $this->spiderPage($baseUri, $baseUri);
+        $this->start_base = self::getUriBase($baseUri);
+        $this->spiderPage($this->start_base, $baseUri);
     }
 
     protected function spiderPage($baseUri, $uri, $depth = 1)
@@ -98,7 +100,7 @@ class Spider
             foreach ($subUris as $subUri) {
                 if (!array_key_exists($subUri, $this->visited)) {
                     try {
-                        $this->spiderPage($baseUri, $subUri, $depth + 1);
+                        $this->spiderPage(self::getURIBase($subUri), $subUri, $depth + 1);
                     } catch(Exception $e) {
                         echo "\nThe page, ".$uri.' linked to a page that could not be accessed: ' . $subUri.PHP_EOL;
                     }
@@ -126,19 +128,28 @@ class Spider
         );
 
         foreach ($nodes as $node) {
-            $uri = self::absolutePath((string)$node->nodeValue, $baseUri);
             
-            if (!empty($uri)) {
-                if (strncmp($baseUri, $uri, strlen($baseUri)) === 0) {
-                    $uris[] = $uri;
-                } elseif (
-                       $uri != '.'
-                    && preg_match('!^(https?|ftp)://!i', $uri) === 0
-                ) {
-                    $uris[] = $baseHref . $uri;
+            $uri = trim((string)$node->nodeValue);
+            
+            if (substr($uri, 0, 7) != 'mailto:'
+                && substr($uri, 0, 11) != 'javascript:') {
+            
+                $uri = self::absolutePath($uri, $baseUri);
+                
+                if (!empty($uri)) {
+                    if (strncmp($this->start_base, $uri, strlen($this->start_base)) === 0) {
+                        $uris[] = $uri;
+                    } elseif (
+                           $uri != '.'
+                        && preg_match('!^(https?|ftp)://!i', $uri) === 0
+                    ) {
+                        $uris[] = $baseHref . $uri;
+                    }
                 }
             }
         }
+        
+        sort($uris);
 
         return new Spider_UriIterator($uris);
     }
@@ -168,6 +179,26 @@ class Spider
         
         $absoluteUri = $new_txt.$relativeUri;
         
+        // Convert /dir/../ into /
+        while (preg_match('/\/[^\/]+\/\.\.\//', $absoluteUri)) {
+            $absoluteUri = preg_replace('/\/[^\/]+\/\.\.\//', '/', $absoluteUri);
+        }
+
+        
         return $absoluteUri;
+    }
+    
+    public static function getUriBase($uri)
+    {
+        $base_url_parts = parse_url($uri);
+
+        $new_base_url = $uri;
+
+        if (substr($uri, -1) != '/') {
+            $path = pathinfo($base_url_parts['path']);
+            $new_base_url = substr($uri, 0, strlen($uri)-strlen($path['basename']));
+        }
+
+        return $new_base_url;
     }
 }
