@@ -27,8 +27,6 @@
  */
 class Spider
 {
-    const MAX_DEPTH = 50;
-
     protected $loggers = array();
     protected $filters = array();
     protected $downloader = null;
@@ -36,10 +34,15 @@ class Spider
     protected $start_base = null;
     protected $visited = array();
 
+    protected $options = array('page_limit' => 500,
+                               'max_depth' => 50);
+
     public function __construct(
         Spider_Downloader $downloader,
-        Spider_Parser $parser)
+        Spider_Parser $parser,
+        $options = array())
     {
+        $this->options = $options + $this->options;
         $this->setDownloader($downloader);
         $this->setParser($parser);
     }
@@ -79,6 +82,10 @@ class Spider
 
     protected function spiderPage($baseUri, $uri, $depth = 1)
     {
+        //Stop spidering if we have reached the page_limit
+        if ($this->options['page_limit'] > 0 && count($this->visited) >= $this->options['page_limit']) {
+            return null;
+        }
 
         $this->visited[$uri] = true;
 
@@ -89,21 +96,24 @@ class Spider
             $logger->log($uri, $depth, $xpath);
         }
 
-        // spider sub-pages
-        if ($depth < self::MAX_DEPTH) {
-            $subUris = $this->getUris($baseUri, $xpath);
-            
-            foreach ($this->filters as $filter_class) {
-                $subUris = new $filter_class($subUris);
-            }
-            
-            foreach ($subUris as $subUri) {
-                if (!array_key_exists($subUri, $this->visited)) {
-                    try {
-                        $this->spiderPage(self::getURIBase($subUri), $subUri, $depth + 1);
-                    } catch(Exception $e) {
-                        echo "\nThe page, ".$uri.' linked to a page that could not be accessed: ' . $subUri.PHP_EOL;
-                    }
+        //Stop spidering if we have reached the max_depth
+        if ($depth > $this->options['max_depth']) {
+            return;
+        }
+
+        //spider sub-pages
+        $subUris = $this->getUris($baseUri, $xpath);
+
+        foreach ($this->filters as $filter_class) {
+            $subUris = new $filter_class($subUris);
+        }
+
+        foreach ($subUris as $subUri) {
+            if (!array_key_exists($subUri, $this->visited)) {
+                try {
+                    $this->spiderPage(self::getURIBase($subUri), $subUri, $depth + 1);
+                } catch(Exception $e) {
+                    echo "\nThe page, ".$uri.' linked to a page that could not be accessed: ' . $subUri.PHP_EOL;
                 }
             }
         }
