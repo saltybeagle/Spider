@@ -89,7 +89,13 @@ class Spider
 
         $this->visited[$uri] = true;
 
-        $content = $this->downloader->download($uri);
+        try {
+            $content = $this->downloader->download($uri);
+        } catch(Exception $e) {
+            //Couldn't get the page, so don't process it.
+            return null;
+        }
+        
         $xpath   = $this->parser->parse($content, $uri);
 
         foreach ($this->loggers as $logger) {
@@ -110,11 +116,7 @@ class Spider
 
         foreach ($subUris as $subUri) {
             if (!array_key_exists($subUri, $this->visited)) {
-                try {
-                    $this->spiderPage(self::getURIBase($subUri), $subUri, $depth + 1);
-                } catch(Exception $e) {
-                    echo "\nThe page, ".$uri.' linked to a page that could not be accessed: ' . $subUri.PHP_EOL;
-                }
+                $this->spiderPage(self::getURIBase($subUri), $subUri, $depth + 1);
             }
         }
     }
