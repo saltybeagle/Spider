@@ -1,5 +1,5 @@
 <?php
-class Spider_Filter_JavaScript extends Spider_UriFilterInterface
+class Spider_Filter_HttpCode404 extends Spider_UriFilterInterface
 {
     function accept()
     {
