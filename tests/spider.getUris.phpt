@@ -6,7 +6,9 @@ require_once dirname(__FILE__) . '/config.sample.php';
 
 $parser = new Spider_Parser();
 $xpath  = $parser->parse(file_get_contents(dirname(__FILE__) . '/data/examplePage1.html'));
-$uris   = Spider::getUris('http://wwww.basepage.com/spidertest/', 'http://wwww.basepage.com/spidertest/index.php', $xpath);
+$uris   = Spider::getUris('http://wwww.basepage.com/spidertest/',
+                          'http://wwww.basepage.com/spidertest/index.php',
+                          $xpath);
 
 foreach ($uris as $uri) {
     echo $uri . PHP_EOL;

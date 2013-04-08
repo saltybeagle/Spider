@@ -8,7 +8,10 @@ $parser = new Spider_Parser();
 $xpath  = $parser->parse(file_get_contents(dirname(__FILE__) . '/data/examplePage1.html'));
 $spider = new Spider(new Spider_downloader(), new Spider_parser());
 
-$uris   = $spider->getCrawlableUris('http://wwww.basepage.com/spidertest/', 'http://wwww.basepage.com/spidertest/index.php', $xpath);
+$uris   = $spider->getCrawlableUris('http://wwww.basepage.com/spidertest/',
+                                    'http://wwww.basepage.com/spidertest/',
+                                    'http://wwww.basepage.com/spidertest/index.php',
+                                    $xpath);
 
 foreach ($uris as $uri) {
     echo $uri . PHP_EOL;
