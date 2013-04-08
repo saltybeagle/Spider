@@ -8,7 +8,7 @@ class Spider_Filter_EffectiveURL extends Spider_UriFilterInterface
     
     function current()
     {
-        $urlInfo = Spider::getURLInfo($this->current());
+        $urlInfo = Spider::getURLInfo(parent::current());
 
         return $urlInfo['effective_url'];
     }
