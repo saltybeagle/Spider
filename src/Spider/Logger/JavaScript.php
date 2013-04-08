@@ -1,5 +1,5 @@
 <?php
-class Spider_JavaScriptLogger extends Spider_DbLogger
+class Spider_Logger_JavaScript extends Spider_DbLogger
 {
     public function log($uri, $depth, DOMXPath $xpath)
     {

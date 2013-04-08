@@ -1,5 +1,5 @@
 <?php
-class Spider_MailtoFilter extends Spider_UriFilterInterface
+class Spider_Filter_Mailto extends Spider_UriFilterInterface
 {
     function accept()
     {
