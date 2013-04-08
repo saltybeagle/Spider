@@ -85,9 +85,9 @@ class Spider
      * Add a filter object to the spider
      * Filters are used to filter out pages before attempting to spider them
      * 
-     * @param Spider_UriFilterInterface $filterClass
+     * @param string $filterClass - the class name of the filter
      */
-    public function addUriFilter(Spider_UriFilterInterface $filterClass)
+    public function addUriFilter($filterClass)
     {
         if (!in_array($filterClass, $this->filters)) {
             $this->filters[] = $filterClass;
