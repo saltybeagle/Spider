@@ -182,7 +182,7 @@ class Spider
         $uris = self::getUris($baseUri, $currentUri, $xpath);
         
         //remove anchors
-        $uris = new Spider_filter_Anchor($uris);
+        
 
         //remove empty uris
         $uris = new Spider_Filter_Empty($uris);
