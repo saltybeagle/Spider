@@ -96,7 +96,7 @@ class Spider
             return null;
         }
         
-        $xpath   = $this->parser->parse($content, $uri);
+        $xpath = $this->parser->parse($content, $uri);
 
         foreach ($this->loggers as $logger) {
             $logger->log($uri, $depth, $xpath);
@@ -142,28 +142,93 @@ class Spider
         foreach ($nodes as $node) {
             
             $uri = trim((string)$node->nodeValue);
-            
-            if (substr($uri, 0, 7) != 'mailto:'
-                && substr($uri, 0, 11) != 'javascript:') {
-            
-                $uri = self::absolutePath($uri, $baseUri);
-                
-                if (!empty($uri)) {
-                    if (strncmp($this->start_base, $uri, strlen($this->start_base)) === 0) {
-                        $uris[] = $uri;
-                    } elseif (
-                           $uri != '.'
-                        && preg_match('!^(https?|ftp)://!i', $uri) === 0
-                    ) {
-                        $uris[] = $baseHref . $uri;
-                    }
+
+            //trim off hashes
+            if (stripos($uri, '#') !== false) {
+                $uri = substr($uri, 0, stripos($uri, '#'));
+
+                //Skip if it is now an empty uri, as the will make something in 'test/test.php' with a href like '#' go to 'test/', which it shouldn't.
+                if ($uri == '') {
+                    continue;
                 }
             }
+
+            if (substr($uri, 0, 7) == 'mailto:'
+                || substr($uri, 0, 11) == 'javascript:') {
+                continue;
+            }
+
+            $uri = self::absolutePath($uri, $baseUri);
+
+            if (empty($uri)) {
+                continue;
+            }
+
+            if ($uri != '.'&& preg_match('!^(https?|ftp)://!i', $uri) === 0) {
+                $uri = $baseHref . $uri;
+            }
+
+            //Only get sub-pages of the baseuri
+            if (strncmp($this->start_base, $uri, strlen($this->start_base)) !== 0) {
+                continue;
+            }
+
+            //Make sure that we get the final url (it might redirect, and we don't want to crawl pages on another site).
+            $urlInfo = self::getURLInfo($uri);
+
+            //Don't check if it 404s or we can't connect.
+            if ($urlInfo['http_code'] == 404) {
+                continue;
+            }
+
+            $uri = $urlInfo['effective_url'];
+
+            //check again, because it might have changed...
+            if (strncmp($this->start_base, $uri, strlen($this->start_base)) !== 0) {
+                continue;
+            }
+
+            $uris[] = $uri;
         }
-        
+
         sort($uris);
 
         return new Spider_UriIterator($uris);
+    }
+
+    public static function getURLInfo($url)
+    {
+        static $urls;
+
+        if ($urls == null) {
+            $urls = array();
+        }
+
+        if (isset($urls[$url])) {
+            return $urls[$url];
+        }
+
+        $curl = curl_init($url);
+
+        curl_setopt($curl, CURLOPT_NOBODY, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_MAXREDIRS, 5);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+        curl_exec($curl);
+
+        $httpStatus = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $effectiveURL = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
+        $curlErrorNo = curl_errno($curl);
+
+        curl_close($curl);
+
+        $urls[$url] = array('http_code' => $httpStatus,
+                            'curl_code' => $curlErrorNo,
+                            'effective_url' => $effectiveURL);
+
+        return $urls[$url];
     }
     
     public static function absolutePath($relativeUri, $baseUri)
