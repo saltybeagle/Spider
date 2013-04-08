@@ -114,7 +114,8 @@ class Spider
     /**
      * Spider a specific page
      * 
-     * @param string $baseUri - The base url for the site
+     * @param string $baseUri - The base url for the page (if http://www.testsite.com/test/index.php,
+     *                          it would be http://www.testsite.com/test/)
      * @param string $uri     - The current uri to spider
      * @param int    $depth   - The current recursion depth
      *
@@ -148,7 +149,7 @@ class Spider
         }
 
         //spider sub-pages
-        $subUris = $this->getCrawlableUris($baseUri, $uri, $xpath);
+        $subUris = $this->getCrawlableUris($this->start_base, $baseUri, $uri, $xpath);
 
         foreach ($this->filters as $filter_class) {
             $subUris = new $filter_class($subUris);
@@ -169,15 +170,15 @@ class Spider
      * 
      * It will also get the effective URLs for a uri (the final url if it redirects)
      * 
-     * @param string   $baseUri    - the base uri for the site
+     * @param          $startUri   - the base uri for the site
+     * @param string   $baseUri    - the base uri for the page
      * @param string   $currentUri - the current uri to get URIs from
      * @param DOMXPath $xpath      - the DOMXPath object for the current uri
      *
      * @return Spider_UriIterator - a list of uris
      */
-    public function getCrawlableUris($baseUri, $currentUri, DOMXPath $xpath)
+    public function getCrawlableUris($startUri, $baseUri, $currentUri, DOMXPath $xpath)
     {
-        
         $uris = self::getUris($baseUri, $currentUri, $xpath);
         
         //remove anchors
@@ -193,7 +194,7 @@ class Spider
         $uris = new Spider_Filter_Mailto($uris);
         
         //Filter external links out. (do now to reduce the number of HTTP requests that we have to make)
-        $uris = new Spider_Filter_External($uris, $baseUri);
+        $uris = new Spider_Filter_External($uris, $startUri);
         
         //Filter out pages that returned a 404
         $uris = new Spider_Filter_HttpCode404($uris);
@@ -202,7 +203,7 @@ class Spider
         $uris = new Spider_Filter_EffectiveURL($uris);
 
         //Filter external links again as they may have changed due to the effectiveURL filter.
-        $uris = new Spider_Filter_External($uris, $baseUri);
+        $uris = new Spider_Filter_External($uris, $startUri);
         
         return $uris;
     }
