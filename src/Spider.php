@@ -21,6 +21,7 @@
  * @package   PEAR2_Spider
  * @author    Michael Gauthier <mike@silverorange.com>
  * @author    Brett Bieber <saltybeagle@php.net>
+ * @author    Michael Fairchild <mfairchild365@gmail.com>
  * @copyright 2010 silverorange Inc.
  * @license   http://www.opensource.org/licenses/bsd-license.php New BSD License
  * @link      http://svn.php.net/repository/pear2/PEAR2_Spider
