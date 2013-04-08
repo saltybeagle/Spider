@@ -109,7 +109,7 @@ class Spider
         }
 
         //spider sub-pages
-        $subUris = self::getUris($baseUri, $xpath);
+        $subUris = $this->getCrawlableUris($baseUri, $uri, $xpath);
 
         foreach ($this->filters as $filter_class) {
             $subUris = new $filter_class($subUris);
@@ -122,77 +122,52 @@ class Spider
         }
     }
 
-    public static function getUris($baseUri, DOMXPath $xpath)
+    public function getCrawlableUris($baseUri, $currentUri, DOMXPath $xpath)
+    {
+        
+        $uris = self::getUris($baseUri, $currentUri, $xpath);
+        
+        //remove anchors
+        $uris = new Spider_filter_Anchor($uris);
+
+        //remove empty uris
+        $uris = new Spider_Filter_Empty($uris);
+
+        //remove javascript
+        $uris = new Spider_Filter_JavaScript($uris);
+        
+        //remove mailto links
+        $uris = new Spider_Filter_Mailto($uris);
+        
+        //Filter external links out. (do now to reduce the number of HTTP requests that we have to make)
+        $uris = new Spider_Filter_External($uris, $baseUri);
+        
+        //Filter out pages that returned a 404
+        $uris = new Spider_Filter_HttpCode404($uris);
+        
+        //Get the effective URLs
+        $uris = new Spider_Filter_EffectiveURL($uris);
+
+        //Filter external links again as they may have changed due to the effectiveURL filter.
+        $uris = new Spider_Filter_External($uris, $baseUri);
+        
+        return $uris;
+    }
+
+    public static function getUris($baseUri, $currentUri, DOMXPath $xpath)
     {
         $uris = array();
-
-        $baseHrefNodes = $xpath->query(
-            "//xhtml:base/@href"
-        );
-
-        if ($baseHrefNodes->length > 0) {
-            $baseHref = (string)$baseHrefNodes->item(0)->nodeValue;
-        } else {
-            $baseHref = '';
-        }
 
         $nodes = $xpath->query(
             "//xhtml:a[@href]/@href | //a[@href]/@href"
         );
 
         foreach ($nodes as $node) {
-            
             $uri = trim((string)$node->nodeValue);
-
-            //trim off hashes
-            if (stripos($uri, '#') !== false) {
-                $uri = substr($uri, 0, stripos($uri, '#'));
-
-                //Skip if it is now an empty uri, as the will make something in 'test/test.php' with a href like '#' go to 'test/', which it shouldn't.
-                if ($uri == '') {
-                    continue;
-                }
-            }
-
-            if (substr($uri, 0, 7) == 'mailto:'
-                || substr($uri, 0, 11) == 'javascript:') {
-                continue;
-            }
-
-            $uri = self::absolutePath($uri, $baseUri);
-
-            if (empty($uri)) {
-                continue;
-            }
-
-            if ($uri != '.'&& preg_match('!^(https?|ftp)://!i', $uri) === 0) {
-                $uri = $baseHref . $uri;
-            }
-
-            //Only get sub-pages of the baseuri
-            if (strncmp($baseUri, $uri, strlen($baseUri)) !== 0) {
-                continue;
-            }
-
-            //Make sure that we get the final url (it might redirect, and we don't want to crawl pages on another site).
-            $urlInfo = self::getURLInfo($uri);
-
-            //Don't check if it 404s or we can't connect.
-            if ($urlInfo['http_code'] == 404) {
-                continue;
-            }
-
-            $uri = $urlInfo['effective_url'];
-
-            //check again, because it might have changed...
-            if (strncmp($baseUri, $uri, strlen($baseUri)) !== 0) {
-                continue;
-            }
+            $uri = self::absolutePath($uri, $currentUri, $baseUri);
 
             $uris[] = $uri;
         }
-
-        sort($uris);
 
         return new Spider_UriIterator($uris);
     }
@@ -232,11 +207,21 @@ class Spider
         return $urls[$url];
     }
     
-    public static function absolutePath($relativeUri, $baseUri)
+    public static function absolutePath($relativeUri, $currentUri, $baseUri)
     {
-
         if (filter_var($relativeUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
             // URL is already absolute
+            return $relativeUri;
+        }
+        
+        //return the current uri if the relativeUri is an anchor
+        if (strpos($relativeUri, '#') === 0) {
+            return $currentUri;
+        }
+        
+        $relativeUri_parts = parse_url($relativeUri);
+        
+        if (isset($relativeUri_parts['scheme']) && !in_array($relativeUri_parts['scheme'], array('http', 'https'))) {
             return $relativeUri;
         }
         
