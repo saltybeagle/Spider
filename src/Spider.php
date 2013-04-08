@@ -109,7 +109,7 @@ class Spider
         }
 
         //spider sub-pages
-        $subUris = $this->getUris($baseUri, $xpath);
+        $subUris = self::getUris($baseUri, $xpath);
 
         foreach ($this->filters as $filter_class) {
             $subUris = new $filter_class($subUris);
@@ -122,7 +122,7 @@ class Spider
         }
     }
 
-    protected function getUris($baseUri, DOMXPath $xpath)
+    public static function getUris($baseUri, DOMXPath $xpath)
     {
         $uris = array();
 
@@ -170,7 +170,7 @@ class Spider
             }
 
             //Only get sub-pages of the baseuri
-            if (strncmp($this->start_base, $uri, strlen($this->start_base)) !== 0) {
+            if (strncmp($baseUri, $uri, strlen($baseUri)) !== 0) {
                 continue;
             }
 
@@ -185,7 +185,7 @@ class Spider
             $uri = $urlInfo['effective_url'];
 
             //check again, because it might have changed...
-            if (strncmp($this->start_base, $uri, strlen($this->start_base)) !== 0) {
+            if (strncmp($baseUri, $uri, strlen($baseUri)) !== 0) {
                 continue;
             }
 
