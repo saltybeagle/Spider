@@ -211,15 +211,23 @@ class Spider
     /**
      * Returns all valid uris for a page
      * 
-     * @param string   $baseUri
-     * @param string   $currentUri
-     * @param DOMXPath $xpath
+     * @param string   $baseUri     - the base uri for the page (NOT the site base)
+     * @param string   $currentUri  - the uri of the document
+     * @param DOMXPath $xpath       - the xpath for the document
      *
      * @return Spider_UriIterator - a list of uris
      */
     public static function getUris($baseUri, $currentUri, DOMXPath $xpath)
     {
         $uris = array();
+
+        $baseHrefNodes = $xpath->query(
+            "//xhtml:base/@href"
+        );
+
+        if ($baseHrefNodes->length > 0) {
+            $baseUri = (string)$baseHrefNodes->item(0)->nodeValue;
+        }
 
         $nodes = $xpath->query(
             "//xhtml:a[@href]/@href | //a[@href]/@href"
