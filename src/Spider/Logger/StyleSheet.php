@@ -1,5 +1,5 @@
 <?php
-class Spider_StyleSheetLogger extends Spider_DbLogger
+class Spider_Logger_StyleSheet extends Spider_DbLogger
 {
     public function log($uri, $depth, DOMXPath $xpath)
     {
