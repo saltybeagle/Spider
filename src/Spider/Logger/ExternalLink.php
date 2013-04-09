@@ -1,5 +1,5 @@
 <?php
-class Spider_ExternalLinkLogger extends Spider_LoggerAbstract
+class Spider_Logger_ExternalLink extends Spider_LoggerAbstract
 {
     public function log($uri, $depth, DOMXPath $xpath)
     {

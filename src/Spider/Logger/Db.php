@@ -1,5 +1,5 @@
 <?php
-abstract class Spider_DbLogger extends Spider_LoggerAbstract
+abstract class Spider_Logger_Db extends Spider_LoggerAbstract
 {
     protected $db = null;
 

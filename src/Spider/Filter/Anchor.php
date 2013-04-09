@@ -1,5 +1,5 @@
 <?php
-class Spider_AnchorFilter extends Spider_UriFilterInterface
+class Spider_Filter_Anchor extends Spider_UriFilterInterface
 {
     function accept()
     {
