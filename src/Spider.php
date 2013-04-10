@@ -29,19 +29,21 @@
  */
 class Spider
 {
-    protected $loggers = array();
-    protected $filters = array();
+    protected $loggers    = array();
+    protected $filters    = array();
     protected $downloader = null;
-    protected $parser = null;
+    protected $parser     = null;
     protected $start_base = null;
-    protected $visited = array();
+    protected $visited    = array();
 
     protected $options = array('page_limit' => 500,
                                'max_depth'  => 50,
                                'curlopt_ssl_verifypeer' => false,
                                'curlopt_maxredirs'      => 5,
                                'curlopt_timeout'        => 5,
-                               'curlopt_followlocation' => true);
+                               'curlopt_followlocation' => true,
+                               'crawl_404_pages'        => false,
+                               'use_effective_urls'     => true);
 
     public function __construct(
         Spider_Downloader $downloader,
@@ -200,14 +202,18 @@ class Spider
         //Filter external links out. (do now to reduce the number of HTTP requests that we have to make)
         $uris = new Spider_Filter_External($uris, $startUri);
         
-        //Filter out pages that returned a 404
-        $uris = new Spider_Filter_HttpCode404($uris, $this->options);
-        
-        //Get the effective URLs
-        $uris = new Spider_Filter_EffectiveURL($uris, $this->options);
+        if (!$this->options['crawl_404_pages']) {
+            //Filter out pages that returned a 404
+            $uris = new Spider_Filter_HttpCode404($uris, $this->options);
+        }
 
-        //Filter external links again as they may have changed due to the effectiveURL filter.
-        $uris = new Spider_Filter_External($uris, $startUri);
+        if ($this->options['use_effective_urls']) {
+            //Get the effective URLs
+            $uris = new Spider_Filter_EffectiveURL($uris, $this->options);
+
+            //Filter external links again as they may have changed due to the effectiveURL filter.
+            $uris = new Spider_Filter_External($uris, $startUri);
+        }
         
         return $uris;
     }
