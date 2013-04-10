@@ -29,15 +29,18 @@
  */
 class Spider
 {
-    protected $loggers = array();
-    protected $filters = array();
+    protected $loggers    = array();
+    protected $filters    = array();
     protected $downloader = null;
-    protected $parser = null;
+    protected $parser     = null;
     protected $start_base = null;
-    protected $visited = array();
+    protected $visited    = array();
 
-    protected $options = array('page_limit' => 500,
-                               'max_depth' => 50);
+    protected $options = array('page_limit'         => 500,
+                               'max_depth'          => 50,
+                               'curl_options'       => array(),
+                               'crawl_404_pages'    => false,
+                               'use_effective_urls' => true);
 
     public function __construct(
         Spider_Downloader $downloader,
@@ -196,14 +199,18 @@ class Spider
         //Filter external links out. (do now to reduce the number of HTTP requests that we have to make)
         $uris = new Spider_Filter_External($uris, $startUri);
         
-        //Filter out pages that returned a 404
-        $uris = new Spider_Filter_HttpCode404($uris);
-        
-        //Get the effective URLs
-        $uris = new Spider_Filter_EffectiveURL($uris);
+        if (!$this->options['crawl_404_pages']) {
+            //Filter out pages that returned a 404
+            $uris = new Spider_Filter_HttpCode404($uris, $this->options['curl_options']);
+        }
 
-        //Filter external links again as they may have changed due to the effectiveURL filter.
-        $uris = new Spider_Filter_External($uris, $startUri);
+        if ($this->options['use_effective_urls']) {
+            //Get the effective URLs
+            $uris = new Spider_Filter_EffectiveURL($uris, $this->options['curl_options']);
+
+            //Filter external links again as they may have changed due to the effectiveURL filter.
+            $uris = new Spider_Filter_External($uris, $startUri);
+        }
         
         return $uris;
     }
@@ -245,16 +252,27 @@ class Spider
 
     /**
      * Get information about a url.
-     * 
+     *
      * returns an associative array with
      * 'http_code', 'curl_code' and 'effective_url' as keys.
-     * 
-     * @param string $url
+     *
+     * @param string $url     - the absolute url to get information for
+     * @param array  $options - an associative array of options, including curl options for
+     *                          CURLOPT_SSL_VERIFYPEER
+     *                          CURLOPT_MAXREDIRS
+     *                          CURLOPT_TIMEOUT
+     *                          CURLOPT_FOLLOWLOCATION
      *
      * @return array()
      */
-    public static function getURLInfo($url)
+    public static function getURLInfo($url, $options = array())
     {
+        $options = $options += array(CURLOPT_SSL_VERIFYPEER => false,
+                                     CURLOPT_MAXREDIRS      => 5,
+                                     CURLOPT_TIMEOUT        => 5,
+                                     CURLOPT_FOLLOWLOCATION => true,
+                                     CURLOPT_NOBODY         => true);
+        
         static $urls;
 
         if ($urls == null) {
@@ -267,11 +285,7 @@ class Spider
 
         $curl = curl_init($url);
 
-        curl_setopt($curl, CURLOPT_NOBODY, true);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_MAXREDIRS, 5);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt_array($curl, $options);
 
         curl_exec($curl);
 
