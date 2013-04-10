@@ -366,11 +366,20 @@ class Spider
     {
         $base_url_parts = parse_url($uri);
 
+        $trimLength = 0;
+        
+        if (isset($base_url_parts['query'])) {
+            $trimLength = strlen($base_url_parts['query']) + 1;  //+1 for the ? chacter
+        }
+        
         $new_base_url = $uri;
 
         if (substr($uri, -1) != '/') {
             $path = pathinfo($base_url_parts['path']);
-            $new_base_url = substr($uri, 0, strlen($uri)-strlen($path['basename']));
+            
+            $trimLength += strlen($path['basename']);
+            
+            $new_base_url = substr($uri, 0, strlen($uri)-$trimLength);
         }
 
         return $new_base_url;
