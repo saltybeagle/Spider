@@ -37,7 +37,11 @@ class Spider
     protected $visited = array();
 
     protected $options = array('page_limit' => 500,
-                               'max_depth' => 50);
+                               'max_depth'  => 50,
+                               'curlopt_ssl_verifypeer' => false,
+                               'curlopt_maxredirs'      => 5,
+                               'curlopt_timeout'        => 5,
+                               'curlopt_followlocation' => true);
 
     public function __construct(
         Spider_Downloader $downloader,
@@ -197,10 +201,10 @@ class Spider
         $uris = new Spider_Filter_External($uris, $startUri);
         
         //Filter out pages that returned a 404
-        $uris = new Spider_Filter_HttpCode404($uris);
+        $uris = new Spider_Filter_HttpCode404($uris, $this->options);
         
         //Get the effective URLs
-        $uris = new Spider_Filter_EffectiveURL($uris);
+        $uris = new Spider_Filter_EffectiveURL($uris, $this->options);
 
         //Filter external links again as they may have changed due to the effectiveURL filter.
         $uris = new Spider_Filter_External($uris, $startUri);
@@ -245,16 +249,26 @@ class Spider
 
     /**
      * Get information about a url.
-     * 
+     *
      * returns an associative array with
      * 'http_code', 'curl_code' and 'effective_url' as keys.
-     * 
-     * @param string $url
+     *
+     * @param string $url     - the absolute url to get information for
+     * @param array  $options - an associative array of options, including curl options for
+     *                          CURLOPT_SSL_VERIFYPEER
+     *                          CURLOPT_MAXREDIRS
+     *                          CURLOPT_TIMEOUT
+     *                          CURLOPT_FOLLOWLOCATION
      *
      * @return array()
      */
-    public static function getURLInfo($url)
+    public static function getURLInfo($url, $options = array())
     {
+        $options = $options += array('curlopt_ssl_verifypeer' => false,
+                                     'curlopt_maxredirs'      => 5,
+                                     'curlopt_timeout'        => 5,
+                                     'curlopt_followlocation' => true);
+        
         static $urls;
 
         if ($urls == null) {
@@ -268,10 +282,10 @@ class Spider
         $curl = curl_init($url);
 
         curl_setopt($curl, CURLOPT_NOBODY, true);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curl, CURLOPT_MAXREDIRS, 5);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 5);
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, $options['curlopt_ssl_verifypeer']);
+        curl_setopt($curl, CURLOPT_MAXREDIRS, $options['curlopt_maxredirs']);
+        curl_setopt($curl, CURLOPT_TIMEOUT, $options['curlopt_timeout']);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, $options['curlopt_followlocation']);
 
         curl_exec($curl);
 
