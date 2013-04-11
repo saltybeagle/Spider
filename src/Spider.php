@@ -337,14 +337,11 @@ class Spider
             $new_base_url = substr($new_base_url, 0, strlen($new_base_url)-strlen($path['basename']));
         }
         
-        $new_txt = '';
-        
         if (substr($relativeUri, 0, 1) == '/') {
             $new_base_url = $base_url_parts['scheme'].'://'.$base_url_parts['host'];
         }
-        $new_txt .= $new_base_url;
         
-        $absoluteUri = $new_txt.$relativeUri;
+        $absoluteUri = $new_base_url.$relativeUri;
         
         // Convert /dir/../ into /
         while (preg_match('/\/[^\/]+\/\.\.\//', $absoluteUri)) {
