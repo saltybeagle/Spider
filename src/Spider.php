@@ -337,22 +337,30 @@ class Spider
             $new_base_url = substr($new_base_url, 0, strlen($new_base_url)-strlen($path['basename']));
         }
         
-        $new_txt = '';
-        
         if (substr($relativeUri, 0, 1) == '/') {
             $new_base_url = $base_url_parts['scheme'].'://'.$base_url_parts['host'];
         }
-        $new_txt .= $new_base_url;
         
-        $absoluteUri = $new_txt.$relativeUri;
+        $absoluteUri = $new_base_url.$relativeUri;
+        
+        //Take off the query string and only apply the following code to the rest of the uri.
+        $query = '';
+        if (isset($relativeUri_parts['query'])) {
+            $query = '?' . $relativeUri_parts['query'];
+            $absoluteUri = substr($absoluteUri, 0, strlen($query));
+            
+        }
         
         // Convert /dir/../ into /
         while (preg_match('/\/[^\/]+\/\.\.\//', $absoluteUri)) {
             $absoluteUri = preg_replace('/\/[^\/]+\/\.\.\//', '/', $absoluteUri);
         }
-
         
-        return $absoluteUri;
+        //convert ./file to file
+        $absoluteUri = str_replace('./', '', $absoluteUri);
+        
+        //Re-attach the query and return the full url.
+        return $absoluteUri . $query;
     }
 
     /**
