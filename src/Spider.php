@@ -350,7 +350,9 @@ class Spider
         while (preg_match('/\/[^\/]+\/\.\.\//', $absoluteUri)) {
             $absoluteUri = preg_replace('/\/[^\/]+\/\.\.\//', '/', $absoluteUri);
         }
-
+        
+        //convert ./file to file
+        $absoluteUri = str_replace('./', '', $absoluteUri);
         
         return $absoluteUri;
     }
