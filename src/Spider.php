@@ -40,7 +40,8 @@ class Spider
                                'max_depth'          => 50,
                                'curl_options'       => array(),
                                'crawl_404_pages'    => false,
-                               'use_effective_urls' => true);
+                               'use_effective_urls' => true,
+                               'respect_robots_txt' => true);
 
     public function __construct(
         Spider_Downloader $downloader,
@@ -210,6 +211,11 @@ class Spider
 
             //Filter external links again as they may have changed due to the effectiveURL filter.
             $uris = new Spider_Filter_External($uris, $startUri);
+        }
+
+        if ($this->options['respect_robots_txt']) {
+            //Filter out pages that are disallowed by robots.txt
+            $uris = new Spider_Filter_RobotsTxt($uris);
         }
 
         return $uris;
