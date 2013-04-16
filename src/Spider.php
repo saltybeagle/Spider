@@ -347,8 +347,7 @@ class Spider
         $query = '';
         if (isset($relativeUri_parts['query'])) {
             $query = '?' . $relativeUri_parts['query'];
-            $absoluteUri = substr($absoluteUri, 0, strlen($query));
-            
+            $absoluteUri = substr($absoluteUri, 0, strlen($absoluteUri) - strlen($query));
         }
         
         // Convert /dir/../ into /
