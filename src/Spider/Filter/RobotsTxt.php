@@ -5,7 +5,7 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
 
     function accept()
     {
-        return self::robots_allowed($this->current());
+        return $this->robots_allowed($this->current());
     }
 
     /**
@@ -28,7 +28,7 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
         $agents = implode('|', $agents);
 
         // Get robots.txt if it is not statically cached
-        if (empty(self::$robotstxt) && self::$robotstxt !== false) {echo 'fetching robots'."\n";
+        if (empty(self::$robotstxt) && self::$robotstxt !== false) {
             self::$robotstxt = file("http://{$parsed['host']}/robots.txt");
         }
 
