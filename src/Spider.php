@@ -40,7 +40,8 @@ class Spider
                                'max_depth'          => 50,
                                'curl_options'       => array(),
                                'crawl_404_pages'    => false,
-                               'use_effective_urls' => true);
+                               'use_effective_urls' => true,
+                               'respect_robots_txt' => true);
 
     public function __construct(
         Spider_Downloader $downloader,
@@ -54,7 +55,7 @@ class Spider
 
     /**
      * Set the downloader object for the spider (used to download pages)
-     * 
+     *
      * @param Spider_Downloader $downloader
      */
     public function setDownloader(Spider_Downloader $downloader)
@@ -64,7 +65,7 @@ class Spider
 
     /**
      * Set the parser object for the spider (used to parse downloaded pages)
-     * 
+     *
      * @param Spider_ParserInterface $parser
      */
     public function setParser(Spider_ParserInterface $parser)
@@ -74,7 +75,7 @@ class Spider
 
     /**
      * Add a logger object to the spider
-     * 
+     *
      * @param Spider_LoggerAbstract $logger
      */
     public function addLogger(Spider_LoggerAbstract $logger)
@@ -87,7 +88,7 @@ class Spider
     /**
      * Add a filter object to the spider
      * Filters are used to filter out pages before attempting to spider them
-     * 
+     *
      * @param string $filterClass - the class name of the filter
      */
     public function addUriFilter($filterClass)
@@ -100,7 +101,7 @@ class Spider
     /**
      * Spider a site
      * Will spider an entire site, including all pages under the baseUri (as long as it is linked to)
-     * 
+     *
      * @param string $baseUri - The base url for the site
      *
      * @throws Exception
@@ -116,7 +117,7 @@ class Spider
 
     /**
      * Spider a specific page
-     * 
+     *
      * @param string $baseUri - The base url for the page (if http://www.testsite.com/test/index.php,
      *                          it would be http://www.testsite.com/test/)
      * @param string $uri     - The current uri to spider
@@ -139,7 +140,7 @@ class Spider
             //Couldn't get the page, so don't process it.
             return null;
         }
-        
+
         $xpath = $this->parser->parse($content, $uri);
 
         foreach ($this->loggers as $logger) {
@@ -168,11 +169,11 @@ class Spider
     /**
      * Get all crawlable uris for a page
      * crawlable uris are URIs that that the spider can crawl
-     * 
+     *
      * This removes anchors, empty uris, javascipr and mailto calls, external uris, and uris that return a 404
-     * 
+     *
      * It will also get the effective URLs for a uri (the final url if it redirects)
-     * 
+     *
      * @param          $startUri   - the base uri for the site
      * @param string   $baseUri    - the base uri for the page
      * @param string   $currentUri - the current uri to get URIs from
@@ -183,7 +184,7 @@ class Spider
     public function getCrawlableUris($startUri, $baseUri, $currentUri, DOMXPath $xpath)
     {
         $uris = self::getUris($baseUri, $currentUri, $xpath);
-        
+
         //remove anchors
         $uris = new Spider_Filter_Anchor($uris);
 
@@ -192,13 +193,13 @@ class Spider
 
         //remove javascript
         $uris = new Spider_Filter_JavaScript($uris);
-        
+
         //remove mailto links
         $uris = new Spider_Filter_Mailto($uris);
-        
+
         //Filter external links out. (do now to reduce the number of HTTP requests that we have to make)
         $uris = new Spider_Filter_External($uris, $startUri);
-        
+
         if (!$this->options['crawl_404_pages']) {
             //Filter out pages that returned a 404
             $uris = new Spider_Filter_HttpCode404($uris, $this->options['curl_options']);
@@ -211,13 +212,18 @@ class Spider
             //Filter external links again as they may have changed due to the effectiveURL filter.
             $uris = new Spider_Filter_External($uris, $startUri);
         }
-        
+
+        if ($this->options['respect_robots_txt']) {
+            //Filter out pages that are disallowed by robots.txt
+            $uris = new Spider_Filter_RobotsTxt($uris);
+        }
+
         return $uris;
     }
 
     /**
      * Returns all valid uris for a page
-     * 
+     *
      * @param string   $baseUri     - the base uri for the page (NOT the site base)
      * @param string   $currentUri  - the uri of the document
      * @param DOMXPath $xpath       - the xpath for the document
@@ -272,7 +278,7 @@ class Spider
                                      CURLOPT_TIMEOUT        => 5,
                                      CURLOPT_FOLLOWLOCATION => true,
                                      CURLOPT_NOBODY         => true);
-        
+
         static $urls;
 
         if ($urls == null) {
@@ -304,7 +310,7 @@ class Spider
 
     /**
      * Get the absolute path of a uri
-     * 
+     *
      * @param string $relativeUri - the uri to get the absolute path for
      * @param string $currentUri  - the uri of the page that the $relativeUri was found on
      * @param string $baseUri     - the base uri of the site
@@ -317,54 +323,54 @@ class Spider
             // URL is already absolute
             return $relativeUri;
         }
-        
+
         //return the current uri if the relativeUri is an anchor
         if (strpos($relativeUri, '#') === 0) {
             return $currentUri;
         }
-        
+
         $relativeUri_parts = parse_url($relativeUri);
-        
+
         if (isset($relativeUri_parts['scheme']) && !in_array($relativeUri_parts['scheme'], array('http', 'https'))) {
             return $relativeUri;
         }
-        
+
         $new_base_url = $baseUri;
         $base_url_parts = parse_url($baseUri);
-        
+
         if (substr($baseUri, -1) != '/') {
             $path = pathinfo($base_url_parts['path']);
             $new_base_url = substr($new_base_url, 0, strlen($new_base_url)-strlen($path['basename']));
         }
-        
+
         if (substr($relativeUri, 0, 1) == '/') {
             $new_base_url = $base_url_parts['scheme'].'://'.$base_url_parts['host'];
         }
-        
+
         $absoluteUri = $new_base_url.$relativeUri;
-        
+
         //Take off the query string and only apply the following code to the rest of the uri.
         $query = '';
         if (isset($relativeUri_parts['query'])) {
             $query = '?' . $relativeUri_parts['query'];
             $absoluteUri = substr($absoluteUri, 0, strlen($absoluteUri) - strlen($query));
         }
-        
+
         // Convert /dir/../ into /
         while (preg_match('/\/[^\/]+\/\.\.\//', $absoluteUri)) {
             $absoluteUri = preg_replace('/\/[^\/]+\/\.\.\//', '/', $absoluteUri);
         }
-        
+
         //convert ./file to file
         $absoluteUri = str_replace('./', '', $absoluteUri);
-        
+
         //Re-attach the query and return the full url.
         return $absoluteUri . $query;
     }
 
     /**
      * Get the base uri from a uri
-     * 
+     *
      * @param string $uri
      *
      * @return string - the base uri
@@ -374,18 +380,18 @@ class Spider
         $base_url_parts = parse_url($uri);
 
         $trimLength = 0;
-        
+
         if (isset($base_url_parts['query'])) {
             $trimLength = strlen($base_url_parts['query']) + 1;  //+1 for the ? chacter
         }
-        
+
         $new_base_url = $uri;
 
         if (substr($uri, -1) != '/') {
             $path = pathinfo($base_url_parts['path']);
-            
+
             $trimLength += strlen($path['basename']);
-            
+
             $new_base_url = substr($uri, 0, strlen($uri)-$trimLength);
         }
 
