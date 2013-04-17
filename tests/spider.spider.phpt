@@ -10,7 +10,7 @@ if (file_exists(dirname(__FILE__) . '/config.inc.php')) {
 
 $parser = new Spider_Parser();
 $xpath  = $parser->parse(file_get_contents(dirname(__FILE__) . '/data/examplePage1.html'));
-$spider = new Spider(new Spider_downloader(), new Spider_parser());
+$spider = new Spider(new Spider_Downloader(), new Spider_Parser());
 $spider->addLogger(new Spider_Logger_Phpt());
 
 
