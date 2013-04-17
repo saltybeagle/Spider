@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /doNotCrawl.html
+Disallow: /directory1/doNotCrawl.html
