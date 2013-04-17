@@ -8,7 +8,7 @@ if (file_exists(dirname(__FILE__) . '/config.inc.php')) {
     require_once dirname(__FILE__) . '/config.sample.php';
 }
 
-$spider = new Spider(new Spider_downloader(), new Spider_parser());
+$spider = new Spider(new Spider_Downloader(), new Spider_Parser());
 $spider->addLogger(new Spider_Logger_Phpt());
 
 
