@@ -1,7 +1,15 @@
 <?php
 class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
 {
-    public static $robotstxt = array();
+    public static $robotstxt = null;
+
+    private $downloader = null;
+
+    function __construct(Iterator $iterator, $options = array()) {
+        $this->downloader = new Spider_downloader();
+
+        parent::__construct($iterator);
+    }
 
     function accept()
     {
@@ -29,17 +37,19 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
 
         // Get robots.txt if it is not statically cached
         if (empty(self::$robotstxt) && self::$robotstxt !== false) {
-            self::$robotstxt = file("{$parsed['scheme']}://{$parsed['host']}/robots.txt");
+            self::$robotstxt = $this->downloader->download("{$parsed['scheme']}://{$parsed['host']}/robots.txt");
         }
 
+        $robotstxt = explode("\n", self::$robotstxt);
+
         // If there isn't a robots.txt, then we're allowed in
-        if (empty(self::$robotstxt)) {
+        if (empty($robotstxt)) {
             return true;
         }
 
         $rules = array();
         $ruleApplies = false;
-        foreach (self::$robotstxt as $line) {
+        foreach ($robotstxt as $line) {
             // Skip blank lines
             if (!$line = trim($line)) {
                 continue;
