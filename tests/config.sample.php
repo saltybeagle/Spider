@@ -10,4 +10,4 @@ function autoload($class)
 spl_autoload_register("autoload");
 
 //Default to a site that should be visible to everyone.  add a tests/config.inc.php to override
-$GLOBALS['baseurl'] = "http://ucommxsrv2.unl.edu/spider/tests/data/";
+$GLOBALS['baseurl'] = "http://saltybeagle.github.io/Spider/tests/";
