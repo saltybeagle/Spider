@@ -29,7 +29,7 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
 
         // Get robots.txt if it is not statically cached
         if (empty(self::$robotstxt) && self::$robotstxt !== false) {
-            self::$robotstxt = file("{$parsed['scheme']}://{$parsed['host']}/robots.txt");
+            self::$robotstxt = @file("{$parsed['scheme']}://{$parsed['host']}/robots.txt");
         }
 
         // If there isn't a robots.txt, then we're allowed in

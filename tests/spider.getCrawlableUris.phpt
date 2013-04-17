@@ -6,7 +6,7 @@ require_once dirname(__FILE__) . '/config.sample.php';
 
 $parser = new Spider_Parser();
 $xpath  = $parser->parse(file_get_contents(dirname(__FILE__) . '/data/examplePage1.html'));
-$spider = new Spider(new Spider_Downloader(), new Spider_Parser());
+$spider = new Spider(new Spider_Downloader(), new Spider_Parser(), array('respect_robots_txt'=>false));
 
 $uris   = $spider->getCrawlableUris('http://wwww.basepage.com/spidertest/',
                                     'http://wwww.basepage.com/spidertest/',
