@@ -1,0 +1,1 @@
+{"name":"Spider","tagline":"Basic web spider","body":"#Spider\r\n\r\n##Description\r\nSpiders a website and optionally logs information about it\r\n\r\nThis is a simple, yet flexible web spider for indexing a website.\r\n\r\n##Requires\r\n* PHP 5\r\n* CURL\r\n","google":"","note":"Don't delete this file! It's used internally to help with page regeneration."}
