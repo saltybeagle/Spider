@@ -6,7 +6,7 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
     private $downloader = null;
 
     function __construct(Iterator $iterator, $options = array()) {
-        $this->downloader = new Spider_downloader();
+        $this->downloader = new Spider_Downloader();
 
         parent::__construct($iterator);
     }
