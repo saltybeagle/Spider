@@ -19,7 +19,7 @@ class Spider_Logger_StyleSheet extends Spider_DbLogger
         );
 
         foreach ($nodes as $node) {
-            $styles[] = (string)$node->nodeValue;
+            $styles[] = (string) $node->nodeValue;
         }
 
         return $styles;

@@ -1,12 +1,12 @@
 <?php
 class Spider_Filter_Anchor extends Spider_UriFilterInterface
 {
-    function accept()
+    public function accept()
     {
         return true;
     }
-    
-    function current()
+
+    public function current()
     {
         return preg_replace('/#(.*)/', '', parent::current());
     }

@@ -5,13 +5,14 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
 
     private $downloader = null;
 
-    function __construct(Iterator $iterator, $options = array()) {
+    public function __construct(Iterator $iterator, $options = array())
+    {
         $this->downloader = new Spider_Downloader();
 
         parent::__construct($iterator);
     }
 
-    function accept()
+    public function accept()
     {
         return $this->robots_allowed($this->current());
     }
@@ -25,7 +26,7 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
      * Original PHP code by Chirp Internet: www.chirp.com.au
      * Please acknowledge use of this code by including this header.
      */
-    function robots_allowed($url, $useragent = false)
+    public function robots_allowed($url, $useragent = false)
     {
         $parsed = parse_url($url);
 

@@ -18,7 +18,7 @@ class Spider_Logger_JavaScript extends Spider_DbLogger
         );
 
         foreach ($nodes as $node) {
-            $scripts[] = (string)$node->nodeValue;
+            $scripts[] = (string) $node->nodeValue;
         }
 
         return $scripts;

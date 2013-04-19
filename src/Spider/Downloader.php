@@ -26,6 +26,7 @@ class Spider_Downloader
         if (!$result) {
             throw new Exception('Error downloading ' . $uri. $result);
         }
+
         return $result;
     }
 

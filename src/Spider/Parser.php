@@ -3,7 +3,7 @@ class Spider_Parser implements Spider_ParserInterface
 {
     protected $options = array('tidy' => true);
 
-    function __construct($options = array())
+    public function __construct($options = array())
     {
         $this->options += $options;
     }
@@ -36,6 +36,7 @@ class Spider_Parser implements Spider_ParserInterface
 
         $xpath = new DOMXPAth($document);
         $xpath->registerNamespace('xhtml', 'http://www.w3.org/1999/xhtml');
+
         return $xpath;
     }
 }

@@ -3,19 +3,19 @@ class Spider_Filter_EffectiveURL extends Spider_UriFilterInterface
 {
     protected $options = array();
 
-    function __construct(Iterator $iterator, $options = array())
+    public function __construct(Iterator $iterator, $options = array())
     {
         $this->options = $options;
 
         parent::__construct($iterator);
     }
-    
-    function accept()
+
+    public function accept()
     {
         return true;
     }
-    
-    function current()
+
+    public function current()
     {
         $urlInfo = Spider::getURLInfo(parent::current(), $this->options);
 

@@ -120,8 +120,8 @@ class Spider
      *
      * @param string $baseUri - The base url for the page (if http://www.testsite.com/test/index.php,
      *                          it would be http://www.testsite.com/test/)
-     * @param string $uri     - The current uri to spider
-     * @param int    $depth   - The current recursion depth
+     * @param string $uri   - The current uri to spider
+     * @param int    $depth - The current recursion depth
      *
      * @return null
      */
@@ -136,7 +136,7 @@ class Spider
 
         try {
             $content = $this->downloader->download($uri);
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             //Couldn't get the page, so don't process it.
             return null;
         }
@@ -224,9 +224,9 @@ class Spider
     /**
      * Returns all valid uris for a page
      *
-     * @param string   $baseUri     - the base uri for the page (NOT the site base)
-     * @param string   $currentUri  - the uri of the document
-     * @param DOMXPath $xpath       - the xpath for the document
+     * @param string   $baseUri    - the base uri for the page (NOT the site base)
+     * @param string   $currentUri - the uri of the document
+     * @param DOMXPath $xpath      - the xpath for the document
      *
      * @return Spider_UriIterator - a list of uris
      */
@@ -239,7 +239,7 @@ class Spider
         );
 
         if ($baseHrefNodes->length > 0) {
-            $baseUri = (string)$baseHrefNodes->item(0)->nodeValue;
+            $baseUri = (string) $baseHrefNodes->item(0)->nodeValue;
         }
 
         $nodes = $xpath->query(
@@ -247,7 +247,7 @@ class Spider
         );
 
         foreach ($nodes as $node) {
-            $uri = trim((string)$node->nodeValue);
+            $uri = trim((string) $node->nodeValue);
             $uri = self::absolutePath($uri, $currentUri, $baseUri);
 
             $uris[] = $uri;

@@ -2,15 +2,15 @@
 class Spider_Filter_HttpCode404 extends Spider_UriFilterInterface
 {
     protected $options = array();
-    
-    function __construct(Iterator $iterator, $options = array())
+
+    public function __construct(Iterator $iterator, $options = array())
     {
         $this->options = $options;
 
         parent::__construct($iterator);
     }
-    
-    function accept()
+
+    public function accept()
     {
         $urlInfo = Spider::getURLInfo($this->current(), $this->options);
 

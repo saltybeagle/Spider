@@ -19,7 +19,7 @@ class Spider_Logger_ExternalLink extends Spider_LoggerAbstract
         );
 
         foreach ($nodes as $node) {
-            $links[] = (string)$node->nodeValue;
+            $links[] = (string) $node->nodeValue;
         }
 
         return $links;
