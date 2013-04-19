@@ -1,5 +1,5 @@
 <?php
-class Spider_Filter_EffectiveURL extends Spider_UriFilterInterface
+class Spider_Filter_EffectiveURI extends Spider_UriFilterInterface
 {
     protected $options = array();
 
