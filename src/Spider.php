@@ -40,7 +40,7 @@ class Spider
                                'max_depth'          => 50,
                                'curl_options'       => array(),
                                'crawl_404_pages'    => false,
-                               'use_effective_urls' => true,
+                               'use_effective_uris' => true,
                                'respect_robots_txt' => true);
 
     public function __construct(
@@ -102,7 +102,7 @@ class Spider
      * Spider a site
      * Will spider an entire site, including all pages under the baseUri (as long as it is linked to)
      *
-     * @param string $baseUri - The base url for the site
+     * @param string $baseUri - The base uri for the site
      *
      * @throws Exception
      */
@@ -118,7 +118,7 @@ class Spider
     /**
      * Spider a specific page
      *
-     * @param string $baseUri - The base url for the page (if http://www.testsite.com/test/index.php,
+     * @param string $baseUri - The base uri for the page (if http://www.testsite.com/test/index.php,
      *                          it would be http://www.testsite.com/test/)
      * @param string $uri   - The current uri to spider
      * @param int    $depth - The current recursion depth
@@ -172,7 +172,7 @@ class Spider
      *
      * This removes anchors, empty uris, javascipr and mailto calls, external uris, and uris that return a 404
      *
-     * It will also get the effective URLs for a uri (the final url if it redirects)
+     * It will also get the effective URIs for a uri (the final uri if it redirects)
      *
      * @param          $startUri   - the base uri for the site
      * @param string   $baseUri    - the base uri for the page
@@ -200,11 +200,11 @@ class Spider
         //Filter external links out. (do now to reduce the number of HTTP requests that we have to make)
         $uris = new Spider_Filter_External($uris, $startUri);
 
-        if ($this->options['use_effective_urls']) {
-            //Get the effective URLs
-            $uris = new Spider_Filter_EffectiveURL($uris, $this->options['curl_options']);
+        if ($this->options['use_effective_uris']) {
+            //Get the effective URIs
+            $uris = new Spider_Filter_EffectiveURI($uris, $this->options['curl_options']);
 
-            //Filter external links again as they may have changed due to the effectiveURL filter.
+            //Filter external links again as they may have changed due to the effectiveURI filter.
             $uris = new Spider_Filter_External($uris, $startUri);
         }
 
@@ -252,12 +252,12 @@ class Spider
     }
 
     /**
-     * Get information about a url.
+     * Get information about a uri.
      *
      * returns an associative array with
-     * 'http_code', 'curl_code' and 'effective_url' as keys.
+     * 'http_code', 'curl_code' and 'effective_uri' as keys.
      *
-     * @param string $url     - the absolute url to get information for
+     * @param string $uri     - the absolute uri to get information for
      * @param array  $options - an associative array of options, including curl options for
      *                          CURLOPT_SSL_VERIFYPEER
      *                          CURLOPT_MAXREDIRS
@@ -266,7 +266,7 @@ class Spider
      *
      * @return array()
      */
-    public static function getURIInfo($url, $options = array())
+    public static function getURIInfo($uri, $options = array())
     {
         $options = $options += array(
             CURLOPT_SSL_VERIFYPEER => false,
@@ -286,18 +286,18 @@ class Spider
         //The options MAY change, and thus the results (such as 'content' may change), so cache based on options too.
         $optionsMD5 = md5(serialize($options));
 
-        if (isset($urls[$optionsMD5][$url])) {
-            return $urls[$optionsMD5][$url];
+        if (isset($urls[$optionsMD5][$uri])) {
+            return $urls[$optionsMD5][$uri];
         }
 
-        $curl = curl_init($url);
+        $curl = curl_init($uri);
 
         curl_setopt_array($curl, $options);
 
         $content = curl_exec($curl);
 
         $httpStatus   = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $effectiveURL = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
+        $effectiveURI = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
         $curlErrorNo  = curl_errno($curl);
 
         curl_close($curl);
@@ -306,14 +306,25 @@ class Spider
             $urls[$optionsMD5] = array();
         }
 
-        $urls[$optionsMD5][$url] = array(
+        $details = array(
             'http_code'     => $httpStatus,
             'curl_code'     => $curlErrorNo,
-            'effective_url' => $effectiveURL,
+            'effective_url' => $effectiveURI,
             'content'       => $content
         );
 
-        return $urls[$optionsMD5][$url];
+        /*
+         * in theory, we could run out of memory if we store large amounts of content.  So, return before the details
+         * are stored if we are supposed to return content.
+        */
+        if ($options[CURLOPT_RETURNTRANSFER]) {
+            return $details;
+        }
+
+        //Cache to reduce the number of requests
+        $urls[$optionsMD5][$uri] = $details;
+
+        return $urls[$optionsMD5][$uri];
     }
 
     /**
