@@ -135,7 +135,7 @@ class Spider
         $this->visited[$uri] = true;
 
         try {
-            $content = $this->downloader->download($uri);
+            $content = $this->downloader->download($uri, $this->options);
         } catch (Exception $e) {
             //Couldn't get the page, so don't process it.
             return null;
@@ -199,11 +199,6 @@ class Spider
 
         //Filter external links out. (do now to reduce the number of HTTP requests that we have to make)
         $uris = new Spider_Filter_External($uris, $startUri);
-
-        if (!$this->options['crawl_404_pages']) {
-            //Filter out pages that returned a 404
-            $uris = new Spider_Filter_HttpCode404($uris, $this->options['curl_options']);
-        }
 
         if ($this->options['use_effective_urls']) {
             //Get the effective URLs
@@ -271,13 +266,16 @@ class Spider
      *
      * @return array()
      */
-    public static function getURLInfo($url, $options = array())
+    public static function getURIInfo($url, $options = array())
     {
-        $options = $options += array(CURLOPT_SSL_VERIFYPEER => false,
-                                     CURLOPT_MAXREDIRS      => 5,
-                                     CURLOPT_TIMEOUT        => 5,
-                                     CURLOPT_FOLLOWLOCATION => true,
-                                     CURLOPT_NOBODY         => true);
+        $options = $options += array(
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_MAXREDIRS      => 5,
+            CURLOPT_TIMEOUT        => 5,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_NOBODY         => true,
+            CURLOPT_RETURNTRANSFER => false
+        );
 
         static $urls;
 
@@ -285,27 +283,37 @@ class Spider
             $urls = array();
         }
 
-        if (isset($urls[$url])) {
-            return $urls[$url];
+        //The options MAY change, and thus the results (such as 'content' may change), so cache based on options too.
+        $optionsMD5 = md5(serialize($options));
+
+        if (isset($urls[$optionsMD5][$url])) {
+            return $urls[$optionsMD5][$url];
         }
 
         $curl = curl_init($url);
 
         curl_setopt_array($curl, $options);
 
-        curl_exec($curl);
+        $content = curl_exec($curl);
 
-        $httpStatus = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $httpStatus   = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $effectiveURL = curl_getinfo($curl, CURLINFO_EFFECTIVE_URL);
-        $curlErrorNo = curl_errno($curl);
+        $curlErrorNo  = curl_errno($curl);
 
         curl_close($curl);
 
-        $urls[$url] = array('http_code' => $httpStatus,
-                            'curl_code' => $curlErrorNo,
-                            'effective_url' => $effectiveURL);
+        if (!isset($urls[$optionsMD5])) {
+            $urls[$optionsMD5] = array();
+        }
 
-        return $urls[$url];
+        $urls[$optionsMD5][$url] = array(
+            'http_code'     => $httpStatus,
+            'curl_code'     => $curlErrorNo,
+            'effective_url' => $effectiveURL,
+            'content'       => $content
+        );
+
+        return $urls[$optionsMD5][$url];
     }
 
     /**
