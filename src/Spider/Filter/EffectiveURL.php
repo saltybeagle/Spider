@@ -17,7 +17,7 @@ class Spider_Filter_EffectiveURL extends Spider_UriFilterInterface
 
     public function current()
     {
-        $urlInfo = Spider::getURLInfo(parent::current(), $this->options);
+        $urlInfo = Spider::getURIInfo(parent::current(), $this->options);
 
         return $urlInfo['effective_url'];
     }
