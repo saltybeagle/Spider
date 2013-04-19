@@ -235,7 +235,7 @@ class Spider
         $uris = array();
 
         $baseHrefNodes = $xpath->query(
-            "//xhtml:base/@href"
+            "//xhtml:base/@href | //base/@href"
         );
 
         if ($baseHrefNodes->length > 0) {
