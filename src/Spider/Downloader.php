@@ -1,37 +1,27 @@
 <?php
 class Spider_Downloader
 {
-    private $curl = null;
-
-    public function __construct()
+    public function download($uri, $options = array())
     {
-        $this->curl = curl_init();
+        //Make sure that the curl_options exists.
+        if (!isset($options['curl_options'])) {
+            $options['curl_options'] = array();
+        }
+        
+        //Make sure that the content is returned.
+        $options['curl_options'][CURLOPT_RETURNTRANSFER] = true;
+        $options['curl_options'][CURLOPT_NOBODY]         = false;
 
-        curl_setopt_array(
-            $this->curl,
-            array(
-                CURLOPT_AUTOREFERER    => true,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_USERAGENT      => 'silverorange-spider',
-            )
-        );
-    }
-
-    public function download($uri)
-    {
-        curl_setopt($this->curl, CURLOPT_URL, $uri);
-        $result = curl_exec($this->curl);
-        if (!$result) {
-            throw new Exception('Error downloading ' . $uri. $result);
+        $info = Spider::getURIInfo($uri, $options['curl_options']);
+        
+        if (!$info['content']) {
+            throw new Exception('Error downloading ' . $uri . ' ' . $info['content']);
         }
 
-        return $result;
-    }
+        if (in_array($info['http_code'], array(0, 404)) && isset($options['crawl_404_pages']) && !$options['crawl_404_pages']) {
+            throw new Exception('404 page ' . $uri . ' ' . $info['http_code']);
+        }
 
-    public function __destruct()
-    {
-        curl_close($this->curl);
+        return $info['content'];
     }
 }
