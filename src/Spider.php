@@ -348,6 +348,11 @@ class Spider
             return $currentUri;
         }
 
+        //Return the current uri if the relativeURI is empty.
+        if ($relativeUri == '') {
+            return $currentUri;
+        }
+
         $relativeUri_parts = parse_url($relativeUri);
 
         if (isset($relativeUri_parts['scheme']) && !in_array($relativeUri_parts['scheme'], array('http', 'https'))) {
@@ -374,14 +379,14 @@ class Spider
             $query = '?' . $relativeUri_parts['query'];
             $absoluteUri = substr($absoluteUri, 0, strlen($absoluteUri) - strlen($query));
         }
+  
+        //convert /./file to /file
+        $absoluteUri = str_replace('/./', '/', $absoluteUri);
 
-        // Convert /dir/../ into /
-        while (preg_match('/\/[^\/]+\/\.\.\//', $absoluteUri)) {
-            $absoluteUri = preg_replace('/\/[^\/]+\/\.\.\//', '/', $absoluteUri);
+        // Convert /dir1/../dir2/ into /dir2/
+        while (preg_match('/\/[^\/\.]+\/\.\.\//', $absoluteUri)) {
+            $absoluteUri = preg_replace('/\/[^\/\.]+\/\.\.\//', '/', $absoluteUri);
         }
-
-        //convert ./file to file
-        $absoluteUri = str_replace('./', '', $absoluteUri);
 
         //Re-attach the query and return the full url.
         return $absoluteUri . $query;
