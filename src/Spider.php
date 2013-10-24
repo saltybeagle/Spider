@@ -329,6 +329,11 @@ class Spider
             return $currentUri;
         }
 
+        //Return the current uri if the relativeURI is empty.
+        if ($relativeUri == '') {
+            return $currentUri;
+        }
+
         $relativeUri_parts = parse_url($relativeUri);
 
         if (isset($relativeUri_parts['scheme']) && !in_array($relativeUri_parts['scheme'], array('http', 'https'))) {
