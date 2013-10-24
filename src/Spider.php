@@ -362,8 +362,8 @@ class Spider
         }
 
         // Convert /dir/../ into /
-        while (preg_match('/\/[^\/]+\/\.\.\//', $absoluteUri)) {
-            $absoluteUri = preg_replace('/\/[^\/]+\/\.\.\//', '/', $absoluteUri);
+        while (preg_match('/\/[^\/\.]+\/\.\.\//', $absoluteUri)) {
+            $absoluteUri = preg_replace('/\/[^\/\.]+\/\.\.\//', '/', $absoluteUri);
         }
 
         //convert ./file to file
