@@ -1,0 +1,6 @@
+{
+    "name": "saltybeagle/Spider",
+    "autoload": {
+        "psr-0": { "Spider": "src/" }
+    }
+}
