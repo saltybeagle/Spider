@@ -54,6 +54,62 @@ class Spider
     }
 
     /**
+     * @return array - an array of loggers
+     */
+    public function getLoggers()
+    {
+        return $this->loggers;
+    }
+
+    /**
+     * @return array - an array of filters
+     */
+    public function getFilters()
+    {
+        return $this->filters;
+    }
+
+    /**
+     * @return Spider_Downloader - the current downloader
+     */
+    public function getDownloader()
+    {
+        return $this->downloader;
+    }
+
+    /**
+     * @return Spider_Parser - the current parser
+     */
+    public function getParser()
+    {
+        return $this->parser;
+    }
+
+    /**
+     * @return string - the base uri of the scan
+     */
+    public function getStartBase()
+    {
+        return $this->start_base;
+    }
+
+    /**
+     * @return array - array of visited pages
+     */
+    public function getVisited()
+    {
+        return $this->visited;
+    }
+
+    /**
+     * @return array - array of options
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
      * Set the downloader object for the spider (used to download pages)
      *
      * @param Spider_Downloader $downloader
