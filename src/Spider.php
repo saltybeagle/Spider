@@ -172,6 +172,64 @@ class Spider
     }
 
     /**
+     * Download a page
+     * 
+     * @param string $uri the uri of the page to download
+     * @return mixed - the content of the download
+     */
+    public function downloadPage($uri)
+    {
+        return $this->downloader->download($uri, $this->options);
+    }
+
+    /**
+     * Page a page's content into xpath
+     * 
+     * @param string $content the html content of the page
+     * @param string $uri the uri of the page
+     * @return mixed - the xpath data of the content
+     */
+    public function parsePage($content, $uri)
+    {
+        return $this->parser->parse($content, $uri);
+    }
+
+    /**
+     * Apply loggers to a page
+     * 
+     * @param string $uri The uri of the page
+     * @param string $depth The depth of the page scan
+     * @param string $xpath The xpath object for the page
+     */
+    public function logPage($uri, $depth, $xpath)
+    {
+        foreach ($this->loggers as $logger) {
+            $logger->log($uri, $depth, $xpath);
+        }
+    }
+
+    /**
+     * Download, parse and log a page
+     *
+     * @param string $uri The URI for the page
+     * @param string $depth The Depth of the page scan
+     * @return mixed - the xpath for the page
+     */
+    public function processPage($uri, $depth)
+    {
+        //Download it
+        $content = $this->downloadPage($uri);
+
+        //Parse it
+        $xpath = $this->parsePage($content, $uri);
+
+        //Log it
+        $this->logPage($uri, $depth, $xpath);
+        
+        return $xpath;
+    }
+
+    /**
      * Spider a specific page
      *
      * @param string $baseUri - The base uri for the page (if http://www.testsite.com/test/index.php,
@@ -189,18 +247,12 @@ class Spider
         }
 
         $this->visited[$uri] = true;
-
+        
         try {
-            $content = $this->downloader->download($uri, $this->options);
+            $xpath = $this->processPage($uri, $depth);
         } catch (Exception $e) {
             //Couldn't get the page, so don't process it.
             return null;
-        }
-
-        $xpath = $this->parser->parse($content, $uri);
-
-        foreach ($this->loggers as $logger) {
-            $logger->log($uri, $depth, $xpath);
         }
 
         //Stop spidering if we have reached the max_depth
