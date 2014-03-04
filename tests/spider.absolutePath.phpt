@@ -24,6 +24,13 @@ $baseURI    = 'http://www.example.com/dir1/dir2/dir3/dir4/dir5/dir6/';
 
 echo Spider::absolutePath('../../../../test.php', $currentURI, $baseURI) . PHP_EOL;
 echo Spider::absolutePath('./../../../../test.php', $currentURI, $baseURI) . PHP_EOL;
+
+$currentURI = 'http://www.example.com/';
+$baseURI    = 'http://www.example.com/';
+echo Spider::absolutePath('//unl.edu/', $currentURI, $baseURI) . PHP_EOL;
+$currentURI = 'https://www.example.com/';
+$baseURI    = 'https://www.example.com/';
+echo Spider::absolutePath('//unl.edu/', $currentURI, $baseURI) . PHP_EOL;
 ?>
 --EXPECT--
 http://www.example.com/test/test.php
@@ -39,3 +46,5 @@ http://www.example.com/test/path/?test=true
 http://www.example.com/test/index.php
 http://www.example.com/dir1/dir2/test.php
 http://www.example.com/dir1/dir2/test.php
+http://unl.edu/
+https://unl.edu/

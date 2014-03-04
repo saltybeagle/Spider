@@ -473,6 +473,16 @@ class Spider
         $new_base_url = $baseUri;
         $base_url_parts = parse_url($baseUri);
 
+        if (substr($relativeUri, 0, 2) == '//' && isset($base_url_parts['host'])) {
+            //Handle protocol agnostic urls
+            $protocol = 'http';
+            if (isset($base_url_parts['scheme'])) {
+                //make the protocol the same as the baseUri
+                $protocol = $base_url_parts['scheme'];
+            }
+            return $protocol . ':' . $relativeUri;
+        }
+
         if (substr($baseUri, -1) != '/') {
             $path = pathinfo($base_url_parts['path']);
             $new_base_url = substr($new_base_url, 0, strlen($new_base_url)-strlen($path['basename']));
