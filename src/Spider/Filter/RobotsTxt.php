@@ -1,7 +1,7 @@
 <?php
 class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
 {
-    public static $robotstxt = null;
+    public static $robotstxt = array();
 
     private $downloader = null;
 
@@ -48,12 +48,14 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
         }
         $agents = implode('|', $agents);
 
+        $root = $parsed['scheme'] . '://' . $parsed['host'] . '/';
+        
         // Get robots.txt if it is not statically cached
-        if (empty(self::$robotstxt) && self::$robotstxt !== false) {
-            self::$robotstxt = $this->downloader->download("{$parsed['scheme']}://{$parsed['host']}/robots.txt", $this->options);
+        if (empty(self::$robotstxt) && !isset(self::$robotstxt[$root])) {
+            self::$robotstxt[$root] = $this->downloader->download($root . "robots.txt", $this->options);
         }
 
-        $robotstxt = explode("\n", self::$robotstxt);
+        $robotstxt = explode("\n", self::$robotstxt[$root]);
 
         // If there isn't a robots.txt, then we're allowed in
         if (empty($robotstxt)) {

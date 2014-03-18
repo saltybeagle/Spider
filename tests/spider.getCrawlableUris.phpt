@@ -8,7 +8,7 @@ $parser = new Spider_Parser();
 $xpath  = $parser->parse(file_get_contents(dirname(__FILE__) . '/data/examplePage1.html'));
 $spider = new Spider(new Spider_Downloader(), new Spider_Parser());
 
-Spider_Filter_RobotsTxt::$robotstxt = file_get_contents(dirname(__FILE__) . '/data/robots.txt');
+Spider_Filter_RobotsTxt::$robotstxt['http://wwww.basepage.com/'] = file_get_contents(dirname(__FILE__) . '/data/robots.txt');
 
 $uris   = $spider->getCrawlableUris('http://wwww.basepage.com/spidertest/',
                                     'http://wwww.basepage.com/spidertest/',
@@ -20,7 +20,7 @@ foreach ($uris as $uri) {
     echo $uri . PHP_EOL;
 }
 
-Spider_Filter_RobotsTxt::$robotstxt = file_get_contents(dirname(__FILE__) . '/data/robots-spider.txt');
+Spider_Filter_RobotsTxt::$robotstxt['http://wwww.basepage.com/'] = file_get_contents(dirname(__FILE__) . '/data/robots-spider.txt');
 
 $uris   = $spider->getCrawlableUris('http://wwww.basepage.com/spidertest/',
                                     'http://wwww.basepage.com/spidertest/',
