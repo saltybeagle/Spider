@@ -322,7 +322,7 @@ class Spider
 
         if ($this->options['respect_robots_txt']) {
             //Filter out pages that are disallowed by robots.txt
-            $uris = new Spider_Filter_RobotsTxt($uris);
+            $uris = new Spider_Filter_RobotsTxt($uris, $this->options);
         }
 
         return $uris;

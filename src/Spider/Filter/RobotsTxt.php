@@ -5,16 +5,25 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
 
     private $downloader = null;
 
+    /**
+     * Array of options
+     * 
+     * @var array
+     */
+    protected $options = array();
+
     public function __construct(Iterator $iterator, $options = array())
     {
         $this->downloader = new Spider_Downloader();
+        
+        $this->options = $options;
 
         parent::__construct($iterator);
     }
 
     public function accept()
     {
-        return $this->robots_allowed($this->current());
+        return $this->robots_allowed($this->current(), $this->options['user_agent']);
     }
 
     /**
@@ -38,7 +47,7 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
 
         // Get robots.txt if it is not statically cached
         if (empty(self::$robotstxt) && self::$robotstxt !== false) {
-            self::$robotstxt = $this->downloader->download("{$parsed['scheme']}://{$parsed['host']}/robots.txt");
+            self::$robotstxt = $this->downloader->download("{$parsed['scheme']}://{$parsed['host']}/robots.txt", $this->options);
         }
 
         $robotstxt = explode("\n", self::$robotstxt);
