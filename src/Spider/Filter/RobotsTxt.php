@@ -28,7 +28,7 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
 
     /**
      * @param string $url
-     * @param string $useragent
+     * @param bool|string $useragent
      *
      * @return bool
      *
@@ -39,9 +39,9 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
     {
         $parsed = parse_url($url);
 
-        $agents = array(preg_quote('*'));
+        $agents = array(preg_quote('*', '/'));
         if ($useragent) {
-            $agents[] = preg_quote($useragent);
+            $agents[] = preg_quote($useragent, '/');
         }
         $agents = implode('|', $agents);
 
