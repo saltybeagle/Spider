@@ -18,6 +18,9 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
         
         $this->options = $options;
 
+        //Don't throw exceptions on 404 robots.txt
+        $this->options['crawl_404_pages'] = true;
+
         parent::__construct($iterator);
     }
 
