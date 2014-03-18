@@ -41,7 +41,8 @@ class Spider
                                'curl_options'       => array(),
                                'crawl_404_pages'    => false,
                                'use_effective_uris' => true,
-                               'respect_robots_txt' => true);
+                               'respect_robots_txt' => true,
+                               'user_agent'         => 'spider/1.0');
 
     public function __construct(
         Spider_Downloader $downloader,
