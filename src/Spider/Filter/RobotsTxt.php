@@ -1,25 +1,37 @@
 <?php
 class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
 {
-    public static $robotstxt = null;
+    public static $robotstxt = array();
 
     private $downloader = null;
+
+    /**
+     * Array of options
+     * 
+     * @var array
+     */
+    protected $options = array();
 
     public function __construct(Iterator $iterator, $options = array())
     {
         $this->downloader = new Spider_Downloader();
+        
+        $this->options = $options;
+
+        //Don't throw exceptions on 404 robots.txt
+        $this->options['crawl_404_pages'] = true;
 
         parent::__construct($iterator);
     }
 
     public function accept()
     {
-        return $this->robots_allowed($this->current());
+        return $this->robots_allowed($this->current(), $this->options['user_agent']);
     }
 
     /**
      * @param string $url
-     * @param string $useragent
+     * @param bool|string $useragent
      *
      * @return bool
      *
@@ -30,18 +42,20 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
     {
         $parsed = parse_url($url);
 
-        $agents = array(preg_quote('*'));
+        $agents = array(preg_quote('*', '/'));
         if ($useragent) {
-            $agents[] = preg_quote($useragent);
+            $agents[] = preg_quote($useragent, '/');
         }
         $agents = implode('|', $agents);
 
+        $root = $parsed['scheme'] . '://' . $parsed['host'] . '/';
+        
         // Get robots.txt if it is not statically cached
-        if (empty(self::$robotstxt) && self::$robotstxt !== false) {
-            self::$robotstxt = $this->downloader->download("{$parsed['scheme']}://{$parsed['host']}/robots.txt");
+        if (!isset(self::$robotstxt[$root])) {
+            self::$robotstxt[$root] = $this->downloader->download($root . "robots.txt", $this->options);
         }
 
-        $robotstxt = explode("\n", self::$robotstxt);
+        $robotstxt = explode("\n", self::$robotstxt[$root]);
 
         // If there isn't a robots.txt, then we're allowed in
         if (empty($robotstxt)) {

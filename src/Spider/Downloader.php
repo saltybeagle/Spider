@@ -8,6 +8,10 @@ class Spider_Downloader
             $options['curl_options'] = array();
         }
         
+        if (isset($options['user_agent'])) {
+            $options['curl_options'][CURLOPT_USERAGENT] = $options['user_agent'];
+        }
+        
         //Make sure that the content is returned.
         $options['curl_options'][CURLOPT_RETURNTRANSFER] = true;
         $options['curl_options'][CURLOPT_NOBODY]         = false;
