@@ -45,17 +45,20 @@ foreach ($uris as $uri) {
 --EXPECT--
 Disallow *:
 http://wwww.basepage.com/spidertest/examplePage2.html
+http://wwww.basepage.com/spidertest/examplePage2.html
 http://wwww.basepage.com/spidertest/example/page2.html
 http://wwww.basepage.com/spidertest/page1.html
 http://wwww.basepage.com/spidertest/directory/
 http://wwww.basepage.com/spidertest/index.php
 Disallow useragent:
 http://wwww.basepage.com/spidertest/examplePage2.html
+http://wwww.basepage.com/spidertest/examplePage2.html
 http://wwww.basepage.com/spidertest/example/page2.html
 http://wwww.basepage.com/spidertest/page1.html
 http://wwww.basepage.com/spidertest/directory/
 http://wwww.basepage.com/spidertest/index.php
 Disallow directory:
+http://wwww.basepage.com/spidertest/examplePage2.html
 http://wwww.basepage.com/spidertest/examplePage2.html
 http://wwww.basepage.com/spidertest/page1.html
 http://wwww.basepage.com/spidertest/directory/

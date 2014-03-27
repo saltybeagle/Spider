@@ -18,6 +18,7 @@ foreach ($uris as $uri) {
 http://www.google.com
 https://www.arstechnica.com/
 http://wwww.basepage.com/spidertest/examplePage2.html
+http://wwww.basepage.com/spidertest/examplePage2.html
 http://wwww.basepage.com/spidertest/example/page2.html
 http://wwww.basepage.com/index.html
 http://wwww.basepage.com/spidertest/page1.html
