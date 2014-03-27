@@ -27,6 +27,7 @@ class Spider_Parser implements Spider_ParserInterface
                 'char-encoding' => 'utf8', //Enforce utf8 encoding
                 'hide-comments' => true, //don't output comments
                 'fix-uri' => false,
+                'fix-backslash' => false,
             ));
         }
 
