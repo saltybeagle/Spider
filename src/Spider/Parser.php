@@ -26,6 +26,7 @@ class Spider_Parser implements Spider_ParserInterface
                 'numeric-entities' => true, //Translate named entities to numeric entities (html5 does not have a dtd and chokes on named entities)
                 'char-encoding' => 'utf8', //Enforce utf8 encoding
                 'hide-comments' => true, //don't output comments
+                'fix-uri' => false,
             ));
         }
 
