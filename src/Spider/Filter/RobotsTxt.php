@@ -52,7 +52,12 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
         
         // Get robots.txt if it is not statically cached
         if (!isset(self::$robotstxt[$root])) {
-            self::$robotstxt[$root] = $this->downloader->download($root . "robots.txt", $this->options);
+            try {
+                self::$robotstxt[$root] = $this->downloader->download($root . "robots.txt", $this->options);
+            } catch (Exception $e) {
+                //Failed to get the robots.txt file
+                self::$robotstxt[$root] = '';
+            }
         }
 
         $robotstxt = explode("\n", self::$robotstxt[$root]);
