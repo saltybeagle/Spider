@@ -86,7 +86,13 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
                     return true;
                 }
                 // Add rules that apply to array for testing
-                $rules[] = preg_quote(trim($regs[1]), '/');
+                
+                $rule = preg_quote(trim($regs[1]), '/');
+
+                //Convert wildcards to regex wildcards
+                $rule = str_replace('\*', '.*', $rule);
+                
+                $rules[] = $rule;
             }
         }
 

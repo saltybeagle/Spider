@@ -2,3 +2,4 @@ User-agent: spider/1.0
 Disallow: /spidertest/example/
 Disallow: /spidertest/doNotCrawl.html
 Disallow: /spidertest/directory1/doNotCrawl.html
+Disallow: /spidertest/*/doNotCrawlWildcard.html
