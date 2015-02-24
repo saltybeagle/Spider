@@ -28,6 +28,11 @@ class Spider_Parser implements Spider_ParserInterface
         $document = new DOMDocument();
         $document->strictErrorChecking = false;
 
+        if (function_exists('mb_convert_encoding')) {
+            //Ensure content is UTF-8, if it isn't, loadXML might not work.
+            $content = mb_convert_encoding($content, 'UTF-8');
+        }
+
         if ($this->options['tidy'] && extension_loaded('tidy')) {
             //Convert and repair as xhtml
             $tidy     = new tidy;
