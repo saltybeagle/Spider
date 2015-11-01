@@ -1,7 +1,7 @@
 #Spider
 
 ##Description
-Spiders a website and optionally logs information about it
+Spiders a website and optionally logs information about it.
 
 This is a simple, yet flexible web spider for indexing a website.
 
