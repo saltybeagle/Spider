@@ -28,4 +28,5 @@ http://wwww.basepage.com/spidertest/directory2/doNotCrawlWildcard.html
 http://wwww.basepage.com/spidertest/index.php
 mailto:test@example.com
 javascript:void(0)
+tel:411
 http://wwww.basepage.com/spidertest/doNotCrawl.html
