@@ -461,6 +461,11 @@ class Spider
             return $currentUri;
         }
 
+        //Bug #34
+        if (strpos($relativeUri, 'tel:') === 0) {
+            return $relativeUri;
+        }
+
         //Return the current uri if the relativeURI is empty.
         if ($relativeUri == '') {
             return $currentUri;
