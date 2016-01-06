@@ -473,6 +473,10 @@ class Spider
 
         $relativeUri_parts = parse_url($relativeUri);
 
+        if (false === $relativeUri_parts) {
+            return $relativeUri;
+        }
+
         if (isset($relativeUri_parts['scheme']) && !in_array($relativeUri_parts['scheme'], array('http', 'https'))) {
             return $relativeUri;
         }
