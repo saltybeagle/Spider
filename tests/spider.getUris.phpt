@@ -25,6 +25,7 @@ http://wwww.basepage.com/spidertest/page1.html
 http://wwww.basepage.com/spidertest/directory/
 http://wwww.basepage.com/spidertest/directory1/doNotCrawl.html
 http://wwww.basepage.com/spidertest/directory2/doNotCrawlWildcard.html
+snapchat://?u=test
 http://wwww.basepage.com/spidertest/index.php
 mailto:test@example.com
 javascript:void(0)
