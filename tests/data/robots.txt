@@ -1,3 +1,6 @@
 User-agent: *
 Disallow: /spidertest/doNotCrawl.html
 Disallow: /spidertest/directory1/doNotCrawl.html
+
+User-agent: test*
+Disallow: /
