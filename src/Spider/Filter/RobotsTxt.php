@@ -77,7 +77,7 @@ class Spider_Filter_RobotsTxt extends Spider_UriFilterInterface
 
             // Following rules only apply if User-agent matches $useragent or '*'
             if (preg_match('/^\s*User-agent: (.*)/i', $line, $match)) {
-                $ruleApplies = preg_match("/($agents)/i", $match[1]);
+                $ruleApplies = preg_match("/^($agents)/i", $match[1]);
             }
 
             if ($ruleApplies && preg_match('/^\s*Disallow:(.*)/i', $line, $regs)) {
