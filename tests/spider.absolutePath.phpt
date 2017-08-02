@@ -11,6 +11,7 @@ echo Spider::absolutePath('./test.php', $currentURI, $baseURI) . PHP_EOL;
 echo Spider::absolutePath('test.php', $currentURI, $baseURI) . PHP_EOL;
 echo Spider::absolutePath('./test/./test.php', $currentURI, $baseURI) . PHP_EOL;
 echo Spider::absolutePath('../test.php', $currentURI, $baseURI) . PHP_EOL;
+echo Spider::absolutePath('../test.php', 'http://www.example.com/', 'http://www.example.com/') . PHP_EOL;
 echo Spider::absolutePath('test/test.php', $currentURI, $baseURI) . PHP_EOL;
 echo Spider::absolutePath('test/test.php#test', $currentURI, $baseURI) . PHP_EOL;
 echo Spider::absolutePath('/test/test.php', $currentURI, $baseURI) . PHP_EOL;
@@ -36,6 +37,7 @@ echo Spider::absolutePath('//unl.edu/', $currentURI, $baseURI) . PHP_EOL;
 http://www.example.com/test/test.php
 http://www.example.com/test/test.php
 http://www.example.com/test/test/test.php
+http://www.example.com/test.php
 http://www.example.com/test.php
 http://www.example.com/test/test/test.php
 http://www.example.com/test/test/test.php#test
