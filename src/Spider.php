@@ -520,6 +520,9 @@ class Spider
             $absoluteUri = preg_replace('/\/[^\/\.]+\/\.\.\//', '/', $absoluteUri);
         }
 
+        //Replace any remaining dot paths not matched above (for example http://www.example.com/../test.php)
+        $absoluteUri = str_replace('/../', '/', $absoluteUri);
+        
         //Re-attach the query and return the full url.
         return $absoluteUri . $query;
     }
