@@ -451,6 +451,11 @@ class Spider
      */
     public static function absolutePath($relativeUri, $currentUri, $baseUri)
     {
+        if (preg_match("/^https?:\/\/.*/i", $relativeUri)) {
+            // URL is already absolute, but invalid
+            return $relativeUri;
+        }
+        
         if (filter_var($relativeUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
             // URL is already absolute
             return $relativeUri;
