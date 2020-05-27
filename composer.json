@@ -1,5 +1,5 @@
 {
-    "name": "saltybeagle/Spider",
+    "name": "saltybeagle/spider",
     "autoload": {
         "psr-0": { "Spider": "src/" }
     }

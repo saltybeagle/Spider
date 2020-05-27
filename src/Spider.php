@@ -166,7 +166,7 @@ class Spider
      */
     public function spider($baseUri)
     {
-        if (!filter_var($baseUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
+        if (!filter_var($baseUri, FILTER_VALIDATE_URL)) {
             throw new Exception('Invalid URI: ' . $baseUri);
         }
         $this->start_base = self::getUriBase($baseUri);
@@ -456,7 +456,7 @@ class Spider
             return $relativeUri;
         }
         
-        if (filter_var($relativeUri, FILTER_VALIDATE_URL, FILTER_FLAG_SCHEME_REQUIRED)) {
+        if (filter_var($relativeUri, FILTER_VALIDATE_URL)) {
             // URL is already absolute
             return $relativeUri;
         }
